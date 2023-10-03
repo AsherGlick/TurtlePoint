@@ -1,3 +1,5 @@
 TurtleRoute/route
 __pycache__/
 api_cache/
+venv/
+wiki_cache/
