@@ -19,6 +19,19 @@ class Portal():
 
 	pre_eod: bool = False
 
+	def fixed_westmost_portal_position(self) -> Tuple[float, float]:
+		return self.fixed_portal_position(self.westmost_portal_position)
+
+	def fixed_eastmost_portal_position(self) -> Tuple[float, float]:
+		return self.fixed_portal_position(self.eastmost_portal_position)
+
+	def fixed_portal_position(self, position: Tuple[float,float]) -> Tuple[float, float]:
+		if self.pre_eod:
+			return (
+				position[0] + ContinentCoordinatePreEODOffset[0],
+				position[1] + ContinentCoordinatePreEODOffset[1],
+			)
+		return position
 
 raw_portals: List[Portal] = [
 	Portal("001", M.AURIC_BASIN, (790, 16219), M.VERDANT_BRINK, (877, 16061), pre_eod=True),
@@ -26,14 +39,14 @@ raw_portals: List[Portal] = [
 	Portal("003", M.TANGLED_DEPTHS, (2902, 19509), M.DRAGONS_STAND, (3776, 19771), pre_eod=True),
 	Portal("004", M.VERDANT_BRINK, (3750, 15250), M.THE_SILVERWASTES, (4155, 15495), pre_eod=True),
 	Portal("005", M.THE_SILVERWASTES, (5865, 15283), M.BRISBAN_WILDLANDS, (5974, 15604), pre_eod=True),
-	Portal("006", M.HARATHI_HINTERLANDS, (5559, 16744), M.BRISBAN_WILDLANDS, (6039, 17105), pre_eod=True),
-	Portal("007", M.METRICA_PROVINCE, (8011, 17021), M.BRISBAN_WILDLANDS, (8082, 17270), pre_eod=True),
+	Portal("006", M.DRY_TOP, (5559, 16744), M.BRISBAN_WILDLANDS, (6039, 17105), pre_eod=True),
+	Portal("007", M.BRISBAN_WILDLANDS, (8011, 17021), M.METRICA_PROVINCE, (8082, 17270), pre_eod=True),
 	Portal("008", M.BRISBAN_WILDLANDS, (9218, 14666), M.KESSEX_HILLS, (9492, 14615), pre_eod=True),
 	Portal("009", M.BRISBAN_WILDLANDS, (9244, 16368), M.CALEDON_FOREST, (9443, 16316), pre_eod=True),
 	Portal("010", M.CALEDON_FOREST, (9926, 20038), M.THE_GROVE, (10229, 20633), pre_eod=True),
 	Portal("011", M.METRICA_PROVINCE, (9130, 17658), M.CALEDON_FOREST, (9435, 17664), pre_eod=True),
 	Portal("012", M.CALEDON_FOREST, (11061, 16191), M.KESSEX_HILLS, (11090, 16023), pre_eod=True),
-	Portal("013", M.KESSEX_HILLS, (12232, 14028), M.QUEENSDALE, (12234, 14141), pre_eod=True),
+	Portal("013", M.QUEENSDALE, (12232, 14028), M.KESSEX_HILLS, (12234, 14141), pre_eod=True),
 	Portal("014", M.KESSEX_HILLS, (10301, 14182), M.QUEENSDALE, (10476, 13932), pre_eod=True),
 	Portal("015", M.KESSEX_HILLS, (13353, 14230), M.GENDARRAN_FIELDS, (13561, 14110), pre_eod=True),
 	Portal("016", M.DIVINITYS_REACH, (11900, 10461), M.LAKE_DORIC, (12217, 10587), pre_eod=True),
@@ -53,7 +66,7 @@ raw_portals: List[Portal] = [
 	Portal("030", M.LORNARS_PASS, (19344, 16580), M.DREDGEHAUNT_CLIFFS, (19618, 16380), pre_eod=True),
 	Portal("031", M.LORNARS_PASS, (19035, 18066), M.TIMBERLINE_FALLS, (19184, 18273), pre_eod=True),
 	Portal("032", M.TIMBERLINE_FALLS, (20618, 18243), M.DREDGEHAUNT_CLIFFS, (20665, 17971), pre_eod=True),
-	Portal("033", M.SNOWDEN_DRIFTS, (19107, 13401), M.LORNARS_PASS, (19178, 13188), pre_eod=True),
+	Portal("033", M.LORNARS_PASS, (19107, 13401), M.SNOWDEN_DRIFTS, (19178, 13188), pre_eod=True),
 	Portal("034", M.SNOWDEN_DRIFTS, (21645, 11577), M.WAYFARER_FOOTHILLS, (22032, 11797), pre_eod=True),
 	Portal("035", M.SNOWDEN_DRIFTS, (20977, 11386), M.FROSTGORGE_SOUND, (21044, 11204), pre_eod=True),
 	Portal("036", M.HOELBRAK, (21428, 14519), M.WAYFARER_FOOTHILLS, (22148, 14491), pre_eod=True),
@@ -122,7 +135,18 @@ def get_portal_data() -> Dict[int, List[PortalInfo]]:
 	return portals
 
 
+def within_bounds(point: Tuple[float, float], bounds: Tuple[Tuple[float, float], Tuple[float, float]]):
+	return bounds[0][0] < point[0] and point[0] < bounds[1][0] and bounds[0][1] < point[1] and point[1] < bounds[1][1]
+
+
 if __name__ == "__main__":
 	for portal in raw_portals:
 		if portal.westmost_portal_position[0] > portal.eastmost_portal_position[0]:
 			print("Flipped Portals in id", portal.identifier)
+
+		if not within_bounds(portal.fixed_westmost_portal_position(), portal.westmost_map.bounding_box):
+			print("Westmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.westmost_map.n))
+			print(portal.fixed_westmost_portal_position(), portal.westmost_map.bounding_box)
+		if not within_bounds(portal.fixed_eastmost_portal_position(), portal.eastmost_map.bounding_box):
+			print("Eastmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.eastmost_map.n))
+			print(portal.fixed_eastmost_portal_position(), portal.eastmost_map.bounding_box)
