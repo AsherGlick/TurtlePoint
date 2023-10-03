@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 @dataclass
 class MapInfo():
@@ -113,6 +113,22 @@ central_tyria_map_ids: List[int]= [
 
 
 
+_map_name_lookup: Dict[str, MapInfo] = {}
+_map_id_lookup: Dict[int, MapInfo] = {}
+for attr in dir(M):
+    if callable(getattr(M, attr)):
+        continue
+    if attr.startswith("__"):
+        continue
+    map_info: MapInfo = getattr(M, attr)
+    _map_name_lookup[map_info.n] = map_info
+    _map_id_lookup[map_info.i] = map_info
+
+def map_info_from_name(map_name: str):
+    return _map_name_lookup.get(map_name, None)
+
+def map_info_from_id(map_id: int):
+    return _map_id_lookup.get(map_id, None)
 
 def _build_the_map_list():
     from api_request import get_api_json
