@@ -1,106 +1,122 @@
-AMNYTAS = 1517
-ARBORSTONE = 1428
-AURIC_BASIN = 1043
-BITTERFROST_FRONTIER = 1178
-BJORA_MARCHES = 1343
-BLACK_CITADEL = 218
-BLAZERIDGE_STEPPES = 20
-BLOODSTONE_FEN = 1165
-BLOODTIDE_COAST = 73
-BRISBAN_WILDLANDS = 54
-CALEDON_FOREST = 34
-CELESTIAL_CHALLENGE = 1353
-CLAW_ISLAND = 335
-CRYSTAL_OASIS = 1210
-CURSED_SHORE = 62
-DESERT_HIGHLANDS = 1211
-DIESSA_PLATEAU = 32
-DIVINITYS_REACH = 18
-DOMAIN_OF_ISTAN = 1263
-DOMAIN_OF_KOURNA = 1288
-DOMAIN_OF_VABBI = 1248
-DRACONIS_MONS = 1195
-DRAGON_BASH_ARENA = 1326
-DRAGONFALL = 1317
-DRAGONS_END = 1422
-DRAGONS_STAND = 1041
-DREDGEHAUNT_CLIFFS = 26
-DRIZZLEWOOD_COAST = 1371
-DRY_TOP = 988
-ELON_RIVERLANDS = 1228
-EMBER_BAY = 1175
-EYE_OF_THE_NORTH = 1370
-FIELDS_OF_RUIN = 21
-FIREHEART_RISE = 22
-FROSTGORGE_SOUND = 30
-GENDARRAN_FIELDS = 24
-GROTHMAR_VALLEY = 1330
-GYALA_DELVE = 1490
-HARATHI_HINTERLANDS = 17
-HEART_OF_THE_MISTS = 350
-HOELBRAK = 326
-IRON_MARCHES = 25
-JAHAI_BLUFFS = 1301
-KESSEX_HILLS = 23
-LABYRINTHINE_CLIFFS = 922
-LAKE_DORIC = 1185
-LIONS_ARCH = 50
-LIONS_ARCH_AERODROME = 1155
-LORNARS_PASS = 27
-MAD_KINGS_LABYRINTH = 866
-MAD_KINGS_RACEWAY = 1304
-MALCHORS_LEAP = 65
-MEMORY_OF_OLD_LIONS_ARCH = 1483
-METRICA_PROVINCE = 35
-MISTLOCK_SANCTUARY = 1206
-MISTS_RIFT = 1316
-MOUNT_MAELSTROM = 39
-NEW_KAINENG_CITY = 1438
-NOBLES_FOLLY = 1158
-PLAINS_OF_ASHFORD = 19
-QUEENSDALE = 15
-RATA_SUM = 139
-SANDSWEPT_ISLES = 1271
-SEITUNG_PROVINCE = 1442
-SIRENS_LANDING = 1203
-SKYWATCH_ARCHIPELAGO = 1510
-SNOWDEN_DRIFTS = 31
-SOUTHSUN_COVE = 873
-SPARKFLY_FEN = 53
-SPIRIT_VALE = 1147
-STRAITS_OF_DEVASTATION = 51
-SUPER_ADVENTURE_BOX = 935
-TANGLED_DEPTHS = 1045
-THE_CROWN_PAVILION = 929
-THE_DESOLATION = 1226
-THE_ECHOVALD_WILDS = 1452
-THE_GROVE = 91
-THE_SILVERWASTES = 1015
-THE_WIZARDS_TOWER = 1509
-THOUSAND_SEAS_PAVILION = 1465
-THUNDERHEAD_PEAKS = 1310
-TIMBERLINE_FALLS = 29
-VERDANT_BRINK = 1052
-WAYFARER_FOOTHILLS = 28
-WINDSWEPT_HAVEN = 1215
+from dataclasses import dataclass
+from typing import List
+
+@dataclass
+class MapInfo():
+    # the id of the map
+    i: int
+    # the name of the map
+    n: str
 
 
-central_tyria_map_ids=[ QUEENSDALE, HARATHI_HINTERLANDS, DIVINITYS_REACH,
-    PLAINS_OF_ASHFORD, BLAZERIDGE_STEPPES, FIELDS_OF_RUIN, FIREHEART_RISE,
-    KESSEX_HILLS, GENDARRAN_FIELDS, IRON_MARCHES, DREDGEHAUNT_CLIFFS,
-    LORNARS_PASS, WAYFARER_FOOTHILLS, TIMBERLINE_FALLS, FROSTGORGE_SOUND,
-    SNOWDEN_DRIFTS, DIESSA_PLATEAU, CALEDON_FOREST, METRICA_PROVINCE,
-    MOUNT_MAELSTROM, LIONS_ARCH, STRAITS_OF_DEVASTATION, SPARKFLY_FEN,
-    BRISBAN_WILDLANDS, CURSED_SHORE, MALCHORS_LEAP, BLOODTIDE_COAST, THE_GROVE, 
-    RATA_SUM, BLACK_CITADEL, HOELBRAK, SOUTHSUN_COVE, DRY_TOP, THE_SILVERWASTES,
+# MAP LIST
+class M():
+    AMNYTAS = MapInfo(i=1517, n="Amnytas")
+    ARBORSTONE = MapInfo(i=1428, n="Arborstone")
+    AURIC_BASIN = MapInfo(i=1043, n="Auric Basin")
+    BITTERFROST_FRONTIER = MapInfo(i=1178, n="Bitterfrost Frontier")
+    BJORA_MARCHES = MapInfo(i=1343, n="Bjora Marches")
+    BLACK_CITADEL = MapInfo(i=218, n="Black Citadel")
+    BLAZERIDGE_STEPPES = MapInfo(i=20, n="Blazeridge Steppes")
+    BLOODSTONE_FEN = MapInfo(i=1165, n="Bloodstone Fen")
+    BLOODTIDE_COAST = MapInfo(i=73, n="Bloodtide Coast")
+    BRISBAN_WILDLANDS = MapInfo(i=54, n="Brisban Wildlands")
+    CALEDON_FOREST = MapInfo(i=34, n="Caledon Forest")
+    CELESTIAL_CHALLENGE = MapInfo(i=1353, n="Celestial Challenge")
+    CLAW_ISLAND = MapInfo(i=335, n="Claw Island")
+    CRYSTAL_OASIS = MapInfo(i=1210, n="Crystal Oasis")
+    CURSED_SHORE = MapInfo(i=62, n="Cursed Shore")
+    DESERT_HIGHLANDS = MapInfo(i=1211, n="Desert Highlands")
+    DIESSA_PLATEAU = MapInfo(i=32, n="Diessa Plateau")
+    DIVINITYS_REACH = MapInfo(i=18, n="Divinity's Reach")
+    DOMAIN_OF_ISTAN = MapInfo(i=1263, n="Domain of Istan")
+    DOMAIN_OF_KOURNA = MapInfo(i=1288, n="Domain of Kourna")
+    DOMAIN_OF_VABBI = MapInfo(i=1248, n="Domain of Vabbi")
+    DRACONIS_MONS = MapInfo(i=1195, n="Draconis Mons")
+    DRAGON_BASH_ARENA = MapInfo(i=1326, n="Dragon Bash Arena")
+    DRAGONFALL = MapInfo(i=1317, n="Dragonfall")
+    DRAGONS_END = MapInfo(i=1422, n="Dragon's End")
+    DRAGONS_STAND = MapInfo(i=1041, n="Dragon's Stand")
+    DREDGEHAUNT_CLIFFS = MapInfo(i=26, n="Dredgehaunt Cliffs")
+    DRIZZLEWOOD_COAST = MapInfo(i=1371, n="Drizzlewood Coast")
+    DRY_TOP = MapInfo(i=988, n="Dry Top")
+    ELON_RIVERLANDS = MapInfo(i=1228, n="Elon Riverlands")
+    EMBER_BAY = MapInfo(i=1175, n="Ember Bay")
+    EYE_OF_THE_NORTH = MapInfo(i=1370, n="Eye of the North")
+    FIELDS_OF_RUIN = MapInfo(i=21, n="Fields of Ruin")
+    FIREHEART_RISE = MapInfo(i=22, n="Fireheart Rise")
+    FROSTGORGE_SOUND = MapInfo(i=30, n="Frostgorge Sound")
+    GENDARRAN_FIELDS = MapInfo(i=24, n="Gendarran Fields")
+    GROTHMAR_VALLEY = MapInfo(i=1330, n="Grothmar Valley")
+    GYALA_DELVE = MapInfo(i=1490, n="Gyala Delve")
+    HARATHI_HINTERLANDS = MapInfo(i=17, n="Harathi Hinterlands")
+    HEART_OF_THE_MISTS = MapInfo(i=350, n="Heart of the Mists")
+    HOELBRAK = MapInfo(i=326, n="Hoelbrak")
+    IRON_MARCHES = MapInfo(i=25, n="Iron Marches")
+    JAHAI_BLUFFS = MapInfo(i=1301, n="Jahai Bluffs")
+    KESSEX_HILLS = MapInfo(i=23, n="Kessex Hills")
+    LABYRINTHINE_CLIFFS = MapInfo(i=922, n="Labyrinthine Cliffs")
+    LAKE_DORIC = MapInfo(i=1185, n="Lake Doric")
+    LIONS_ARCH = MapInfo(i=50, n="Lion's Arch")
+    LIONS_ARCH_AERODROME = MapInfo(i=1155, n="Lion's Arch Aerodrome")
+    LORNARS_PASS = MapInfo(i=27, n="Lornar's Pass")
+    MAD_KINGS_LABYRINTH = MapInfo(i=866, n="Mad King's Labyrinth")
+    MAD_KINGS_RACEWAY = MapInfo(i=1304, n="Mad King's Raceway")
+    MALCHORS_LEAP = MapInfo(i=65, n="Malchor's Leap")
+    MEMORY_OF_OLD_LIONS_ARCH = MapInfo(i=1483, n="Memory of Old Lion's Arch")
+    METRICA_PROVINCE = MapInfo(i=35, n="Metrica Province")
+    MISTLOCK_SANCTUARY = MapInfo(i=1206, n="Mistlock Sanctuary")
+    MISTS_RIFT = MapInfo(i=1316, n="Mists Rift")
+    MOUNT_MAELSTROM = MapInfo(i=39, n="Mount Maelstrom")
+    NEW_KAINENG_CITY = MapInfo(i=1438, n="New Kaineng City")
+    NOBLES_FOLLY = MapInfo(i=1158, n="Noble's Folly")
+    PLAINS_OF_ASHFORD = MapInfo(i=19, n="Plains of Ashford")
+    QUEENSDALE = MapInfo(i=15, n="Queensdale")
+    RATA_SUM = MapInfo(i=139, n="Rata Sum")
+    SANDSWEPT_ISLES = MapInfo(i=1271, n="Sandswept Isles")
+    SEITUNG_PROVINCE = MapInfo(i=1442, n="Seitung Province")
+    SIRENS_LANDING = MapInfo(i=1203, n="Siren's Landing")
+    SKYWATCH_ARCHIPELAGO = MapInfo(i=1510, n="Skywatch Archipelago")
+    SNOWDEN_DRIFTS = MapInfo(i=31, n="Snowden Drifts")
+    SOUTHSUN_COVE = MapInfo(i=873, n="Southsun Cove")
+    SPARKFLY_FEN = MapInfo(i=53, n="Sparkfly Fen")
+    SPIRIT_VALE = MapInfo(i=1147, n="Spirit Vale")
+    STRAITS_OF_DEVASTATION = MapInfo(i=51, n="Straits of Devastation")
+    SUPER_ADVENTURE_BOX = MapInfo(i=935, n="Super Adventure Box")
+    TANGLED_DEPTHS = MapInfo(i=1045, n="Tangled Depths")
+    THE_CROWN_PAVILION = MapInfo(i=929, n="The Crown Pavilion")
+    THE_DESOLATION = MapInfo(i=1226, n="The Desolation")
+    THE_ECHOVALD_WILDS = MapInfo(i=1452, n="The Echovald Wilds")
+    THE_GROVE = MapInfo(i=91, n="The Grove")
+    THE_SILVERWASTES = MapInfo(i=1015, n="The Silverwastes")
+    THE_WIZARDS_TOWER = MapInfo(i=1509, n="The Wizard's Tower")
+    THOUSAND_SEAS_PAVILION = MapInfo(i=1465, n="Thousand Seas Pavilion")
+    THUNDERHEAD_PEAKS = MapInfo(i=1310, n="Thunderhead Peaks")
+    TIMBERLINE_FALLS = MapInfo(i=29, n="Timberline Falls")
+    VERDANT_BRINK = MapInfo(i=1052, n="Verdant Brink")
+    WAYFARER_FOOTHILLS = MapInfo(i=28, n="Wayfarer Foothills")
+    WINDSWEPT_HAVEN = MapInfo(i=1215, n="Windswept Haven")
+
+
+central_tyria_map_ids: List[int]= [
+    M.TIMBERLINE_FALLS.i,   M.CALEDON_FOREST.i,   M.LORNARS_PASS.i,   M.DRY_TOP.i,
+    M.FROSTGORGE_SOUND.i,   M.FIELDS_OF_RUIN.i,   M.CURSED_SHORE.i,   M.RATA_SUM.i,
+    M.METRICA_PROVINCE.i,   M.FIREHEART_RISE.i,   M.SPARKFLY_FEN.i,   M.HOELBRAK.i,
+    M.BRISBAN_WILDLANDS.i,  M.DIVINITYS_REACH.i,  M.MALCHORS_LEAP.i,  M.THE_GROVE.i,
+    M.PLAINS_OF_ASHFORD.i,  M.MOUNT_MAELSTROM.i,  M.BLACK_CITADEL.i,  M.LIONS_ARCH.i,
+    M.BLAZERIDGE_STEPPES.i, M.BLOODTIDE_COAST.i,  M.SOUTHSUN_COVE.i,  M.QUEENSDALE.i,
+    M.DREDGEHAUNT_CLIFFS.i, M.GENDARRAN_FIELDS.i, M.SNOWDEN_DRIFTS.i, M.KESSEX_HILLS.i,
+    M.WAYFARER_FOOTHILLS.i, M.THE_SILVERWASTES.i, M.DIESSA_PLATEAU.i, M.IRON_MARCHES.i,
+    M.HARATHI_HINTERLANDS.i, M.STRAITS_OF_DEVASTATION.i
 ]
 
 
-def _build_the_list_above():
+
+
+def _build_the_map_list():
     from api_request import get_api_json
 
     maps = get_api_json("https://api.guildwars2.com/v2/maps?ids=all")
-
 
     for map_data in maps:
 
@@ -110,10 +126,21 @@ def _build_the_list_above():
         if map_data["name"].endswith("(Public)"):
             continue
 
-        name = map_data["name"]#.upper()
-        # name = name.replace(' ', '_')
-        # name = ''.join([char for char in name if char.isupper() or char == '_'])
+        if map_data["id"] in [
+            1095, # Dragons Stand Heart of Thorns
+            1042, # Duplicate Verdant Bringk
+        ]:
+            continue
 
-        print(name, "=", map_data["id"], map_data)
+        name = map_data["name"].upper()
+        name = name.replace(' ', '_')
+        name = ''.join([char for char in name if char.isupper() or char == '_'])
+
+        print("{slug} = MapInfo(i={map_id}, n=\"{map_name}\")".format(
+            slug=name,
+            map_id=map_data["id"],
+            map_name=map_data["name"],
+        ))
+
 if __name__ == "__main__":
-    _build_the_list_above()
+    _build_the_map_list()

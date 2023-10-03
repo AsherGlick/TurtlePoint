@@ -19,12 +19,6 @@ portal_data = get_portal_data()
 
 
 @dataclass
-class Waypoint:
-    point: Tuple[float, float]
-    identifier: str
-
-
-@dataclass
 class Point:
     x: float
     y: float
@@ -61,8 +55,12 @@ def build_map(map_id: int):
         print(get_shortest_path(start, pointarray, end, map_id))
 
 
+################################################################################
+# every_combination_between_zero_and
+#
 # Creates every combination of numbers between 0 and value exclusive. Does not
 # repeat reversed combinations. 
+################################################################################
 def every_combination_between_zero_and(value: int):
     first = 0
     second = 0
@@ -72,70 +70,6 @@ def every_combination_between_zero_and(value: int):
         if second == value:
             first += 1
             second = first
-
-# def format_waypoints(raw_waypoints) -> List[Waypoint]:
-#   waypoints: List[Waypoint] = []
-#   for i, waypoint in enumerate(raw_waypoints):
-#       waypoints.append(Waypoint(
-#           identifier=i,
-#           point=(waypoint["coord"][0], waypoint["coord"][1])
-#       ))
-#   return waypoints
-
-
-# def shortest_path(waypoints: List[Waypoint], start_point: Waypoint, stop_point: Waypoint):
-#   # print(len(waypoints))
-#   shortest_path, path = _shortest_remaining_path(start_point, waypoints[0:8], stop_point)
-#   print(start_point, stop_point, shortest_path)
-
-
-
-
-# def _shortest_remaining_path(
-#   start: Waypoint,
-#   points: List[Waypoint],
-#   end: Waypoint,
-#   existing_distance: float = 0,
-#   cutoff: float = 1e9999,
-# ) -> Tuple[float, List[Waypoint]]:
-#   shortest = cutoff
-#   shortest_path = []
-
-#   if len(points) == 0:
-#       return (calculate_distance(start, end), [start, end])
-
-#   for point in points:
-#       distance = existing_distance + calculate_distance(start, point)
-        
-#       if distance >= cutoff:
-#           continue
-
-#       new_distance, path = _shortest_remaining_path(
-#           point,
-#           [x for x in points if x != point],
-#           end,
-#           distance,
-#           shortest,
-#       )
-#       distance += new_distance
-#       path = [point] + path
-
-#       if shortest > distance:
-#           shortest = distance
-#           shortest_path = path
-
-#   return (shortest, shortest_path)
-
-
-# def calculate_distance(start: Waypoint, end: Waypoint) -> float:
-#   return math.sqrt(math.pow(start.point[0]-end.point[0], 2) + math.pow(start.point[1]-end.point[1], 2));
-
-
-
-# for _, waypoint_count in waypoint_data.items():
-#   print(len(waypoint_count))
-
-# build_map(50)
 
 
 
@@ -173,13 +107,13 @@ def get_shortest_path(start_point: Point, points_to_hit: List[Point], end_point:
 
 
 from map_info import central_tyria_map_ids
-from map_info import DRY_TOP
+from map_info import M
 
 def main():
 
 
     for map_id in central_tyria_map_ids:
-        if map_id == DRY_TOP:
+        if map_id == M.DRY_TOP.i:
             continue
         build_map(map_id)
 
