@@ -1,0 +1,7 @@
+beautifulsoup4==4.12.2
+wikitextparser==0.54.0
+
+## The following requirements were added by pip freeze:
+regex==2023.8.8
+soupsieve==2.5
+wcwidth==0.2.8

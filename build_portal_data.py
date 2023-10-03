@@ -2,6 +2,8 @@ from map_info import M
 from typing import Dict, Tuple, List
 from dataclasses import dataclass
 from map_info import MapInfo
+from dict_diff import dict_diff
+import json
 
 
 ContinentCoordinatePreEODOffset = (+32768, +16384)
@@ -98,8 +100,11 @@ raw_portals: List[Portal] = [
 	Portal("062", M.DIVINITYS_REACH, (11341, 11005), M.LIONS_ARCH, (16592, 14666), pre_eod=True),
 	Portal("063", M.DIVINITYS_REACH, (11937, 10966), M.FIELDS_OF_RUIN, (29065, 18418), pre_eod=True),
 	Portal("064", M.GENDARRAN_FIELDS, (16706, 12619), M.STRAITS_OF_DEVASTATION, (17390, 23393), pre_eod=True),
-	Portal("065", M.BLOODTIDE_COAST, (16672, 16653), M.STRAITS_OF_DEVASTATION, (17418, 23392), pre_eod=True),
+	# Chantry of Secrets is too complicated for us right now
+	# Portal("065", M.BLOODTIDE_COAST, (16672, 16653), M.STRAITS_OF_DEVASTATION, (17418, 23392), pre_eod=True),
 	Portal("066", M.STRAITS_OF_DEVASTATION, (17442, 23401), M.LORNARS_PASS, (17815, 15000), pre_eod=True),
+	Portal("067", M.BLOODTIDE_COAST, (17253, 18918), M.SPARKFLY_FEN, (17355, 19216), pre_eod=True),
+	Portal("068", M.FIELDS_OF_RUIN, (29438, 16347), M.BLAZERIDGE_STEPPES, (29480, 16146), pre_eod=True),
 ]
 
 
@@ -150,3 +155,36 @@ if __name__ == "__main__":
 		if not within_bounds(portal.fixed_eastmost_portal_position(), portal.eastmost_map.bounding_box):
 			print("Eastmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.eastmost_map.n))
 			print(portal.fixed_eastmost_portal_position(), portal.eastmost_map.bounding_box)
+
+	from wiki_request import get_portal_counts
+	from map_info import central_tyria_map_ids
+	wiki_portal_counts = get_portal_counts()
+
+
+	local_portal_counts = {}
+
+	for portal in raw_portals:
+		# skip any portals leading out of central tyria
+		if portal.westmost_map.i not in central_tyria_map_ids or portal.eastmost_map.i not in central_tyria_map_ids:
+			continue
+
+		if portal.westmost_map.n not in local_portal_counts:
+			local_portal_counts[portal.westmost_map.n] = {}
+		if portal.eastmost_map.n not in local_portal_counts:
+			local_portal_counts[portal.eastmost_map.n] = {}
+
+
+		if portal.eastmost_map.n not in local_portal_counts[portal.westmost_map.n]:
+			local_portal_counts[portal.westmost_map.n][portal.eastmost_map.n] = 0
+		if portal.westmost_map.n not in local_portal_counts[portal.eastmost_map.n]:
+			local_portal_counts[portal.eastmost_map.n][portal.westmost_map.n] = 0
+
+		local_portal_counts[portal.westmost_map.n][portal.eastmost_map.n] += 1
+		local_portal_counts[portal.eastmost_map.n][portal.westmost_map.n] += 1
+
+
+	difflines = dict_diff(local_portal_counts, wiki_portal_counts)
+	if len(difflines) > 0:
+		print("Found diff between local data and Wiki Data")
+	for line in difflines:
+		print(line)
