@@ -107,14 +107,9 @@ def get_shortest_path(start_point: Point, points_to_hit: List[Point], end_point:
 
 
 from map_info import central_tyria_map_ids
-from map_info import M
 
 def main():
-
-
     for map_id in central_tyria_map_ids:
-        if map_id == M.DRY_TOP.i:
-            continue
         build_map(map_id)
 
     
