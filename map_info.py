@@ -67,7 +67,6 @@ class M():
     MEMORY_OF_OLD_LIONS_ARCH = MapInfo(i=1483, n="Memory of Old Lion's Arch", bounding_box=((15232, 14336), (17664, 15872)))
     METRICA_PROVINCE = MapInfo(i=35, n="Metrica Province", bounding_box=((39936, 33536), (42112, 36864)))
     MISTLOCK_SANCTUARY = MapInfo(i=1206, n="Mistlock Sanctuary", bounding_box=((46368, 33520), (48416, 35568)))
-    MISTS_RIFT = MapInfo(i=1316, n="Mists Rift", bounding_box=((2944, 13440), (3584, 14080)))
     MOUNT_MAELSTROM = MapInfo(i=39, n="Mount Maelstrom", bounding_box=((50560, 37760), (54400, 40192)))
     NEW_KAINENG_CITY = MapInfo(i=1438, n="New Kaineng City", bounding_box=((25000, 98100), (28840, 100660)))
     NOBLES_FOLLY = MapInfo(i=1158, n="Noble's Folly", bounding_box=((33408, 30976), (36608, 32512)))
@@ -131,6 +130,7 @@ def _build_the_map_list():
         if map_data["id"] in [
             1095, # Dragons Stand Heart of Thorns
             1042, # Duplicate Verdant Bringk
+            1316, # Mists Rifts, similar enough to instanced content probably
         ]:
             continue
 
