@@ -1,0 +1,23 @@
+{
+    "distance": 64385,
+    "points": [
+        {"x": 54098, "y": 24628, "id": "041"},
+        {"x": 54544, "y": 25299, "id": "Ice Floe Waypoint"},
+        {"x": 55232, "y": 25529, "id": "Slough of Despond Waypoint"},
+        {"x": 55227, "y": 25187, "id": "Honor of the Waves Waypoint"},
+        {"x": 55565, "y": 24986, "id": "Watchful Waypoint"},
+        {"x": 56257, "y": 24846, "id": "Path of Starry Skies Waypoint"},
+        {"x": 56297, "y": 25884, "id": "Earthshake Waypoint"},
+        {"x": 56003, "y": 26623, "id": "Yak's Bend Waypoint"},
+        {"x": 55832, "y": 27488, "id": "Arundon Waypoint"},
+        {"x": 55396, "y": 27075, "id": "Highpeaks Waypoint"},
+        {"x": 55253, "y": 26550, "id": "Ridgerock Camp Waypoint"},
+        {"x": 54678, "y": 26989, "id": "Skyheight Steading Waypoint"},
+        {"x": 53880, "y": 27565, "id": "Groznev Waypoint"},
+        {"x": 54078, "y": 26667, "id": "Blue Ice Shining Waypoint"},
+        {"x": 54299, "y": 26253, "id": "Twoloop Waypoint"},
+        {"x": 54000, "y": 25497, "id": "Dimotiki Waypoint"},
+        {"x": 53572, "y": 24661, "id": "Drakkar Waypoint"},
+        {"x": 54098, "y": 24628, "id": "041"}
+    ]
+}

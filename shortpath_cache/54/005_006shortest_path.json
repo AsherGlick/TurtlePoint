@@ -1,0 +1,20 @@
+{
+    "distance": 110325,
+    "points": [
+        {"x": 38742, "y": 31988, "id": "005"},
+        {"x": 38936, "y": 31509, "id": "Proxemics Lab Waypoint"},
+        {"x": 39175, "y": 31346, "id": "Gallowfields Waypoint"},
+        {"x": 40190, "y": 31059, "id": "Seraph Observers Waypoint"},
+        {"x": 40165, "y": 31856, "id": "Brilitine Waypoint"},
+        {"x": 40859, "y": 32459, "id": "Tunnels Waypoint"},
+        {"x": 41311, "y": 32306, "id": "Hillstead Waypoint"},
+        {"x": 41275, "y": 31983, "id": "East End Waypoint"},
+        {"x": 41907, "y": 31191, "id": "Wendon Waypoint"},
+        {"x": 41833, "y": 32676, "id": "Watchful Source Waypoint"},
+        {"x": 40733, "y": 33298, "id": "Mrot Boru Waypoint"},
+        {"x": 39870, "y": 33051, "id": "Mirkrise Waypoint"},
+        {"x": 40015, "y": 32542, "id": "Ulta Metamagicals Waypoint"},
+        {"x": 38992, "y": 32509, "id": "Triforge Point Waypoint"},
+        {"x": 38807, "y": 33489, "id": "006"}
+    ]
+}

@@ -1,0 +1,20 @@
+{
+    "distance": 23470.6,
+    "points": [
+        {"x": 48887, "y": 30764, "id": "024"},
+        {"x": 49063, "y": 30911, "id": "Trader's Forum Waypoint"},
+        {"x": 48571, "y": 30868, "id": "Commodore's Quarter Waypoint"},
+        {"x": 48402, "y": 31156, "id": "Western Ward Waypoint"},
+        {"x": 48229, "y": 31688, "id": "Diverse Ledges Waypoint"},
+        {"x": 48663, "y": 31395, "id": "Sanctum Harbor Waypoint"},
+        {"x": 48996, "y": 31853, "id": "Claw Island Portage Waypoint"},
+        {"x": 49457, "y": 31700, "id": "Fort Marriner Waypoint"},
+        {"x": 49619, "y": 32044, "id": "Bloodcoast Ward Waypoint"},
+        {"x": 49957, "y": 31690, "id": "Farshore Waypoint"},
+        {"x": 50162, "y": 31436, "id": "Cavern Waypoint"},
+        {"x": 49927, "y": 31138, "id": "Guild Bluff Waypoint"},
+        {"x": 49749, "y": 30961, "id": "Eastern Ward Waypoint"},
+        {"x": 49309, "y": 31222, "id": "Gate Hub Plaza Waypoint"},
+        {"x": 49360, "y": 31050, "id": "062"}
+    ]
+}

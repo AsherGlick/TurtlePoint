@@ -1,0 +1,20 @@
+{
+    "distance": 33751.1,
+    "points": [
+        {"x": 44705, "y": 27350, "id": "063"},
+        {"x": 44660, "y": 26885, "id": "Lyssa Waypoint"},
+        {"x": 44266, "y": 26928, "id": "Salma Waypoint"},
+        {"x": 44043, "y": 26498, "id": "Grenth Waypoint"},
+        {"x": 43818, "y": 26866, "id": "Ossan Waypoint"},
+        {"x": 43389, "y": 26850, "id": "Balthazar Waypoint"},
+        {"x": 43628, "y": 27229, "id": "Crown Pavilion Waypoint"},
+        {"x": 43376, "y": 27570, "id": "Melandru Waypoint"},
+        {"x": 43995, "y": 27954, "id": "Dwayna Waypoint"},
+        {"x": 43917, "y": 27584, "id": "Commons Waypoint"},
+        {"x": 44048, "y": 27570, "id": "Ministers Waypoint"},
+        {"x": 44036, "y": 27193, "id": "Palace Waypoint"},
+        {"x": 44410, "y": 27239, "id": "Rurikton Waypoint"},
+        {"x": 44637, "y": 27624, "id": "Kormir Waypoint"},
+        {"x": 44705, "y": 27350, "id": "063"}
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "distance": 49589.3,
+    "points": [
+        {"x": 42260, "y": 30999, "id": "008"},
+        {"x": 42299, "y": 31027, "id": "Halacon Waypoint"},
+        {"x": 42759, "y": 31679, "id": "Overlord's Waypoint"},
+        {"x": 42841, "y": 32330, "id": "Shadowheart Site Waypoint"},
+        {"x": 43537, "y": 32163, "id": "Ireko Tradecamp Waypoint"},
+        {"x": 43833, "y": 31419, "id": "Viathan Waypoint"},
+        {"x": 44843, "y": 31380, "id": "Kessex Haven Waypoint"},
+        {"x": 44742, "y": 32051, "id": "Overlake Haven Waypoint"},
+        {"x": 45528, "y": 31950, "id": "Cereboth Waypoint"},
+        {"x": 45999, "y": 31579, "id": "Darkwound Waypoint"},
+        {"x": 45432, "y": 31161, "id": "Earthworks Camp Waypoint"},
+        {"x": 45766, "y": 30799, "id": "Delanian Waypoint"},
+        {"x": 45163, "y": 30664, "id": "Sojourner's Waypoint"},
+        {"x": 44559, "y": 30633, "id": "Cavernhold Camp Waypoint"},
+        {"x": 44257, "y": 30860, "id": "Gap Waypoint"},
+        {"x": 43589, "y": 30655, "id": "Greyhoof Camp Waypoint"},
+        {"x": 42695, "y": 30680, "id": "Fort Salma Waypoint"},
+        {"x": 43069, "y": 30566, "id": "014"}
+    ]
+}

@@ -1,0 +1,24 @@
+{
+    "distance": 19158.2,
+    "points": [
+        {"x": 55878, "y": 27834, "id": "038"},
+        {"x": 54887, "y": 28256, "id": "Dawnrise Waypoint"},
+        {"x": 55215, "y": 28608, "id": "Crossroads Haven Waypoint"},
+        {"x": 55115, "y": 29004, "id": "Halvaunt Waypoint"},
+        {"x": 54895, "y": 29732, "id": "Zelechor Hot Springs Waypoint"},
+        {"x": 54936, "y": 30511, "id": "Osenfold Waypoint"},
+        {"x": 55046, "y": 30964, "id": "Horncall Waypoint"},
+        {"x": 55448, "y": 31216, "id": "Hero's Moot Waypoint"},
+        {"x": 55359, "y": 31736, "id": "Outcast's Waypoint"},
+        {"x": 55876, "y": 31453, "id": "Grawlenfjord Waypoint"},
+        {"x": 55963, "y": 30568, "id": "Darkriven Waypoint"},
+        {"x": 55498, "y": 30284, "id": "Taigan Waypoint"},
+        {"x": 55447, "y": 29750, "id": "Twinspur Haven Waypoint"},
+        {"x": 55920, "y": 29598, "id": "Vendrake's Homestead Waypoint"},
+        {"x": 55803, "y": 29098, "id": "Krennak's Homestead Waypoint"},
+        {"x": 55653, "y": 28713, "id": "Lostvyrm Cave Waypoint"},
+        {"x": 56027, "y": 28351, "id": "Dolyak Pass Waypoint"},
+        {"x": 55858, "y": 27924, "id": "Solitude Waypoint"},
+        {"x": 55878, "y": 27834, "id": "038"}
+    ]
+}

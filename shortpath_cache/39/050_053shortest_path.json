@@ -1,0 +1,24 @@
+{
+    "distance": 32191.1,
+    "points": [
+        {"x": 52351, "y": 37815, "id": "050"},
+        {"x": 52372, "y": 37859, "id": "Broken Arrow Waypoint"},
+        {"x": 52967, "y": 37946, "id": "Gauntlet Waypoint"},
+        {"x": 53743, "y": 38322, "id": "Crucible of Eternity Waypoint"},
+        {"x": 53917, "y": 39300, "id": "Old Sledge Site Waypoint"},
+        {"x": 54220, "y": 40050, "id": "Judgment Waypoint"},
+        {"x": 53195, "y": 39622, "id": "Irwin Isle Waypoint"},
+        {"x": 52794, "y": 38992, "id": "Oxbow Isle Waypoint"},
+        {"x": 52453, "y": 39564, "id": "Avernan Waypoint"},
+        {"x": 51773, "y": 39890, "id": "Magmatic Waypoint"},
+        {"x": 51987, "y": 39515, "id": "Maelstrom's Waypoint"},
+        {"x": 52162, "y": 38540, "id": "Ashen Waypoint"},
+        {"x": 51797, "y": 38107, "id": "Bard's Waypoint"},
+        {"x": 50706, "y": 38116, "id": "Govoran Waypoint"},
+        {"x": 51007, "y": 38441, "id": "Criterion Waypoint"},
+        {"x": 51326, "y": 38959, "id": "Firebreak Fort Waypoint"},
+        {"x": 51296, "y": 39360, "id": "Spaecia Illogica Waypoint"},
+        {"x": 50740, "y": 39671, "id": "Murkvale Waypoint"},
+        {"x": 50638, "y": 39848, "id": "053"}
+    ]
+}

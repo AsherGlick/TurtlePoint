@@ -1,0 +1,25 @@
+{
+    "distance": 29854.2,
+    "points": [
+        {"x": 53433, "y": 34355, "id": "032"},
+        {"x": 53427, "y": 34290, "id": "Frostland Waypoint"},
+        {"x": 54008, "y": 34034, "id": "Dociu Waypoint"},
+        {"x": 54213, "y": 33707, "id": "Granite Citadel Waypoint"},
+        {"x": 53816, "y": 33263, "id": "Seven Pines Waypoint"},
+        {"x": 53452, "y": 33489, "id": "Grey Road Waypoint"},
+        {"x": 52889, "y": 34117, "id": "Tribulation Waypoint"},
+        {"x": 52536, "y": 34075, "id": "Sorrow's Embrace Waypoint"},
+        {"x": 52704, "y": 33489, "id": "Steelbrachen Waypoint"},
+        {"x": 52451, "y": 32695, "id": "Toran Hollow Waypoint"},
+        {"x": 52690, "y": 32156, "id": "Wyrmblood Waypoint"},
+        {"x": 52909, "y": 31809, "id": "Travelen's Waypoint"},
+        {"x": 53272, "y": 31898, "id": "Havfrue Basin Waypoint"},
+        {"x": 53075, "y": 32429, "id": "Hessdallen Kenning Waypoint"},
+        {"x": 53574, "y": 32721, "id": "Kenning Testing Ground Waypoint"},
+        {"x": 54151, "y": 32611, "id": "Wide Expanse Waypoint"},
+        {"x": 54326, "y": 32033, "id": "Nottowr Fault Waypoint"},
+        {"x": 53932, "y": 32128, "id": "Mountain's Tail Waypoint"},
+        {"x": 53573, "y": 31649, "id": "Graupel Waypoint"},
+        {"x": 53710, "y": 31498, "id": "037"}
+    ]
+}

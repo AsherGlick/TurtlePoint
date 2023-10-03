@@ -1,0 +1,25 @@
+{
+    "distance": 29839.1,
+    "points": [
+        {"x": 59487, "y": 30044, "id": "044"},
+        {"x": 59160, "y": 30929, "id": "Temperus Point Waypoint"},
+        {"x": 58845, "y": 30602, "id": "Feritas Waypoint"},
+        {"x": 58121, "y": 30173, "id": "Greysteel Armory Waypoint"},
+        {"x": 58138, "y": 30589, "id": "Smokestead Waypoint"},
+        {"x": 58481, "y": 31031, "id": "Vir's Gate Waypoint"},
+        {"x": 58482, "y": 31545, "id": "Guardpoint Decimus Waypoint"},
+        {"x": 58552, "y": 31813, "id": "Langmar Estate Waypoint"},
+        {"x": 59366, "y": 31491, "id": "Adorea Waypoint"},
+        {"x": 59821, "y": 31407, "id": "Ashford Waypoint"},
+        {"x": 60860, "y": 31342, "id": "Irondock Shipyard Waypoint"},
+        {"x": 61161, "y": 31717, "id": "Loreclaw Waypoint"},
+        {"x": 61694, "y": 31267, "id": "Duskrend Overlook Waypoint"},
+        {"x": 61513, "y": 30819, "id": "Watchcrag Tower Waypoint"},
+        {"x": 60922, "y": 30687, "id": "Phasmatis Waypoint"},
+        {"x": 60987, "y": 30152, "id": "Ascalon City Waypoint"},
+        {"x": 60433, "y": 30432, "id": "Ascalonian Catacombs Waypoint"},
+        {"x": 59896, "y": 30718, "id": "Spirit Hunter Camp Waypoint"},
+        {"x": 59561, "y": 30217, "id": "Martyr's Waypoint"},
+        {"x": 59487, "y": 30044, "id": "044"}
+    ]
+}

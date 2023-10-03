@@ -1,0 +1,23 @@
+{
+    "distance": 53505.8,
+    "points": [
+        {"x": 46095, "y": 28997, "id": "019"},
+        {"x": 45967, "y": 28419, "id": "Beetletun Waypoint"},
+        {"x": 45150, "y": 29080, "id": "Krytan Waypoint"},
+        {"x": 44714, "y": 28616, "id": "Ojon's Lumbermill Waypoint"},
+        {"x": 44145, "y": 29193, "id": "Scaver Waypoint"},
+        {"x": 44094, "y": 28803, "id": "Garrison Waypoint"},
+        {"x": 43728, "y": 28589, "id": "Shaemoor Waypoint"},
+        {"x": 43356, "y": 28720, "id": "Fields Waypoint"},
+        {"x": 42863, "y": 28509, "id": "Orchard Waypoint"},
+        {"x": 42996, "y": 29695, "id": "Vale Waypoint"},
+        {"x": 43584, "y": 29518, "id": "Crossing Waypoint"},
+        {"x": 43482, "y": 29972, "id": "Claypool Waypoint"},
+        {"x": 44239, "y": 30073, "id": "Heartwood Pass Camp Waypoint"},
+        {"x": 44548, "y": 29806, "id": "Phinney Waypoint"},
+        {"x": 44959, "y": 30336, "id": "Swamplost Haven Waypoint"},
+        {"x": 45274, "y": 29755, "id": "Godslost Waypoint"},
+        {"x": 45690, "y": 29146, "id": "Tunwatch Redoubt Waypoint"},
+        {"x": 46095, "y": 28997, "id": "019"}
+    ]
+}

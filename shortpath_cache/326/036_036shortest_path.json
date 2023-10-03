@@ -1,0 +1,21 @@
+{
+    "distance": 7523.74,
+    "points": [
+        {"x": 54196, "y": 30903, "id": "036"},
+        {"x": 54035, "y": 30693, "id": "Wolf Waypoint"},
+        {"x": 54262, "y": 30542, "id": "Legends Waypoint"},
+        {"x": 54089, "y": 30286, "id": "Bear Waypoint"},
+        {"x": 54270, "y": 30009, "id": "Shelter Rock Waypoint"},
+        {"x": 53794, "y": 30172, "id": "Raven Waypoint"},
+        {"x": 53776, "y": 30500, "id": "Might and Main Waypoint"},
+        {"x": 53455, "y": 30395, "id": "Snow Leopard Waypoint"},
+        {"x": 53048, "y": 30340, "id": "Hero's Compass Waypoint"},
+        {"x": 53314, "y": 30660, "id": "Peeta's Waypoint"},
+        {"x": 53676, "y": 30665, "id": "Trade Commons Waypoint"},
+        {"x": 53655, "y": 30804, "id": "Upper Balcony Waypoint"},
+        {"x": 53493, "y": 30988, "id": "Great Lodge Waypoint"},
+        {"x": 53839, "y": 31018, "id": "Southern Watchpost Waypoint"},
+        {"x": 54174, "y": 30922, "id": "Eastern Watchpost Waypoint"},
+        {"x": 54196, "y": 30903, "id": "036"}
+    ]
+}

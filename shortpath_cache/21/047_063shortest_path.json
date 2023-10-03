@@ -1,0 +1,24 @@
+{
+    "distance": 39703.2,
+    "points": [
+        {"x": 63700, "y": 32813, "id": "047"},
+        {"x": 63570, "y": 32957, "id": "Rosko's Campsite Waypoint"},
+        {"x": 63866, "y": 33374, "id": "Fangfury Watch Waypoint"},
+        {"x": 64080, "y": 34496, "id": "Deathblade's Watch Waypoint"},
+        {"x": 63654, "y": 34933, "id": "Ogre Road Waypoint"},
+        {"x": 62942, "y": 35338, "id": "Forlorn Gate Waypoint"},
+        {"x": 62781, "y": 34729, "id": "Spotter's Waypoint"},
+        {"x": 63112, "y": 34430, "id": "Wreckage of Bloodgorge Watch Waypoint"},
+        {"x": 63103, "y": 33728, "id": "Summit Waypoint"},
+        {"x": 62564, "y": 33973, "id": "Vulture's Waypoint"},
+        {"x": 62633, "y": 33391, "id": "Skoll's Bivouac Waypoint"},
+        {"x": 62592, "y": 32994, "id": "Thunderbreak Waypoint"},
+        {"x": 62073, "y": 32995, "id": "Tenaebron Waypoint"},
+        {"x": 61744, "y": 33678, "id": "Helliot Mine Waypoint"},
+        {"x": 61792, "y": 34406, "id": "Tyler's Bivouac Waypoint"},
+        {"x": 61782, "y": 35261, "id": "Fallen Angels Garrison Waypoint"},
+        {"x": 62364, "y": 35184, "id": "Kestrel Waypoint"},
+        {"x": 62124, "y": 34784, "id": "Hawkgates Waypoint"},
+        {"x": 61833, "y": 34802, "id": "063"}
+    ]
+}

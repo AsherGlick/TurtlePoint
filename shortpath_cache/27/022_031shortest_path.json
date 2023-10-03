@@ -1,0 +1,24 @@
+{
+    "distance": 51126.9,
+    "points": [
+        {"x": 50526, "y": 29984, "id": "022"},
+        {"x": 50626, "y": 30078, "id": "Nentor Waypoint"},
+        {"x": 51056, "y": 30097, "id": "Icedevil's Waypoint"},
+        {"x": 51805, "y": 29889, "id": "Thunderhorns Waypoint"},
+        {"x": 51209, "y": 30480, "id": "Mistriven Waypoint"},
+        {"x": 51645, "y": 30941, "id": "Pinnacle Enclave Waypoint"},
+        {"x": 52056, "y": 31606, "id": "Lamentation Waypoint"},
+        {"x": 51275, "y": 31883, "id": "Afgar's Waypoint"},
+        {"x": 51039, "y": 31474, "id": "Refuge Peak Waypoint"},
+        {"x": 50639, "y": 31314, "id": "Durmand Priory Waypoint"},
+        {"x": 50628, "y": 32378, "id": "Stonescatter Waypoint"},
+        {"x": 51134, "y": 32776, "id": "Cascade Bridge Waypoint"},
+        {"x": 51595, "y": 32519, "id": "False River Waypoint"},
+        {"x": 52020, "y": 33007, "id": "Winterthaw Waypoint"},
+        {"x": 50784, "y": 33228, "id": "False Lake Waypoint"},
+        {"x": 50668, "y": 34081, "id": "Demon's Maw Waypoint"},
+        {"x": 51206, "y": 33631, "id": "Guutra's Homestead Waypoint"},
+        {"x": 51845, "y": 34059, "id": "Vanjir's Stead Waypoint"},
+        {"x": 51803, "y": 34450, "id": "031"}
+    ]
+}

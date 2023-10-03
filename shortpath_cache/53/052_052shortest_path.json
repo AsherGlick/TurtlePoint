@@ -1,0 +1,24 @@
+{
+    "distance": 39848.2,
+    "points": [
+        {"x": 49746, "y": 38603, "id": "052"},
+        {"x": 49260, "y": 38212, "id": "Caer Brier Waypoint"},
+        {"x": 48647, "y": 38360, "id": "Splintered Coast Waypoint"},
+        {"x": 48380, "y": 37754, "id": "Brooloonu Waypoint"},
+        {"x": 48297, "y": 37012, "id": "Forvar's Waypoint"},
+        {"x": 48420, "y": 35663, "id": "Orvar's Glen Waypoint"},
+        {"x": 48721, "y": 36264, "id": "Ocean's Gullet Waypoint"},
+        {"x": 49239, "y": 36452, "id": "Zintl Holy Grounds Waypoint"},
+        {"x": 49626, "y": 35965, "id": "Mire Waypoint"},
+        {"x": 49607, "y": 35721, "id": "Fort Cadence Waypoint"},
+        {"x": 50128, "y": 35786, "id": "Braggi's Stead Waypoint"},
+        {"x": 50075, "y": 36234, "id": "Saltflood Waypoint"},
+        {"x": 50234, "y": 37084, "id": "Flamefrog Waypoint"},
+        {"x": 49398, "y": 37058, "id": "Toade's Head Waypoint"},
+        {"x": 49164, "y": 37688, "id": "Aleem's Waypoint"},
+        {"x": 49822, "y": 37647, "id": "Dryground Village Waypoint"},
+        {"x": 50229, "y": 38119, "id": "Darkweather Waypoint"},
+        {"x": 49789, "y": 38320, "id": "Brackwater Waypoint"},
+        {"x": 49746, "y": 38603, "id": "052"}
+    ]
+}

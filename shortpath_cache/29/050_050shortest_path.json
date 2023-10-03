@@ -1,0 +1,26 @@
+{
+    "distance": 16416.7,
+    "points": [
+        {"x": 52300, "y": 37606, "id": "050"},
+        {"x": 52703, "y": 37372, "id": "Serpent Waypoint"},
+        {"x": 52965, "y": 36940, "id": "Nonmoa Waypoint"},
+        {"x": 53427, "y": 37497, "id": "Okarinoo Waypoint"},
+        {"x": 53745, "y": 37076, "id": "Coil Waypoint"},
+        {"x": 53743, "y": 36599, "id": "Scale Strand Waypoint"},
+        {"x": 53209, "y": 36483, "id": "Eztlitl Grounds Waypoint"},
+        {"x": 52877, "y": 36203, "id": "Stromkarl Waypoint"},
+        {"x": 53439, "y": 35899, "id": "Ogduk Waypoint"},
+        {"x": 53844, "y": 35324, "id": "Foundation 86 Waypoint"},
+        {"x": 53185, "y": 34786, "id": "Iron Veil Waypoint"},
+        {"x": 53082, "y": 35437, "id": "White Paper Waypoint"},
+        {"x": 52594, "y": 35193, "id": "Gentle River Waypoint"},
+        {"x": 51953, "y": 34727, "id": "Krongar Waypoint"},
+        {"x": 52241, "y": 35598, "id": "Thistlereed Waypoint"},
+        {"x": 52162, "y": 35949, "id": "Valance Tutory Waypoint"},
+        {"x": 52216, "y": 36527, "id": "Concordia Waypoint"},
+        {"x": 52444, "y": 36753, "id": "Gyre Rapids Waypoint"},
+        {"x": 52237, "y": 37073, "id": "Rankor Ruins Waypoint"},
+        {"x": 52275, "y": 37557, "id": "Talus Waypoint"},
+        {"x": 52300, "y": 37606, "id": "050"}
+    ]
+}
