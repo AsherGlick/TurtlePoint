@@ -1,5 +1,5 @@
 {
-    "distance": 46384.9,
+    "distance": 24226.9,
     "points": [
         {"x": 50552, "y": 32385, "id": "027"},
         {"x": 50628, "y": 32378, "id": "Stonescatter Waypoint"},
@@ -19,6 +19,6 @@
         {"x": 50626, "y": 30078, "id": "Nentor Waypoint"},
         {"x": 51056, "y": 30097, "id": "Icedevil's Waypoint"},
         {"x": 51805, "y": 29889, "id": "Thunderhorns Waypoint"},
-        {"x": 51946, "y": 29572, "id": "033"}
+        {"x": 51875, "y": 29785, "id": "033"}
     ]
 }

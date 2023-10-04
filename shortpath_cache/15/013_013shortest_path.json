@@ -1,7 +1,7 @@
 {
-    "distance": 30076.6,
+    "distance": 19224.2,
     "points": [
-        {"x": 45002, "y": 30525, "id": "013"},
+        {"x": 45000, "y": 30412, "id": "013"},
         {"x": 45274, "y": 29755, "id": "Godslost Waypoint"},
         {"x": 45690, "y": 29146, "id": "Tunwatch Redoubt Waypoint"},
         {"x": 45967, "y": 28419, "id": "Beetletun Waypoint"},
@@ -18,6 +18,6 @@
         {"x": 44239, "y": 30073, "id": "Heartwood Pass Camp Waypoint"},
         {"x": 44548, "y": 29806, "id": "Phinney Waypoint"},
         {"x": 44959, "y": 30336, "id": "Swamplost Haven Waypoint"},
-        {"x": 45002, "y": 30525, "id": "013"}
+        {"x": 45000, "y": 30412, "id": "013"}
     ]
 }

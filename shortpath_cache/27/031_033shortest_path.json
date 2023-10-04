@@ -1,5 +1,5 @@
 {
-    "distance": 46621.2,
+    "distance": 24463.2,
     "points": [
         {"x": 51803, "y": 34450, "id": "031"},
         {"x": 51845, "y": 34059, "id": "Vanjir's Stead Waypoint"},
@@ -19,6 +19,6 @@
         {"x": 50626, "y": 30078, "id": "Nentor Waypoint"},
         {"x": 51056, "y": 30097, "id": "Icedevil's Waypoint"},
         {"x": 51805, "y": 29889, "id": "Thunderhorns Waypoint"},
-        {"x": 51946, "y": 29572, "id": "033"}
+        {"x": 51875, "y": 29785, "id": "033"}
     ]
 }

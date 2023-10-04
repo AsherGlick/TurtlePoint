@@ -1,7 +1,7 @@
 {
-    "distance": 47650.6,
+    "distance": 25335.7,
     "points": [
-        {"x": 51946, "y": 29572, "id": "033"},
+        {"x": 51875, "y": 29785, "id": "033"},
         {"x": 51056, "y": 30097, "id": "Icedevil's Waypoint"},
         {"x": 50626, "y": 30078, "id": "Nentor Waypoint"},
         {"x": 50639, "y": 31314, "id": "Durmand Priory Waypoint"},
@@ -19,6 +19,6 @@
         {"x": 51645, "y": 30941, "id": "Pinnacle Enclave Waypoint"},
         {"x": 51209, "y": 30480, "id": "Mistriven Waypoint"},
         {"x": 51805, "y": 29889, "id": "Thunderhorns Waypoint"},
-        {"x": 51946, "y": 29572, "id": "033"}
+        {"x": 51875, "y": 29785, "id": "033"}
     ]
 }

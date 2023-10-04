@@ -1,5 +1,5 @@
 {
-    "distance": 40323.6,
+    "distance": 31581.6,
     "points": [
         {"x": 42260, "y": 30999, "id": "008"},
         {"x": 42299, "y": 31027, "id": "Halacon Waypoint"},
@@ -18,6 +18,6 @@
         {"x": 45432, "y": 31161, "id": "Earthworks Camp Waypoint"},
         {"x": 45766, "y": 30799, "id": "Delanian Waypoint"},
         {"x": 45163, "y": 30664, "id": "Sojourner's Waypoint"},
-        {"x": 45000, "y": 30412, "id": "013"}
+        {"x": 45002, "y": 30525, "id": "013"}
     ]
 }

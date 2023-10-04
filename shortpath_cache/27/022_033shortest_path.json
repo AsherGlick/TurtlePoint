@@ -1,5 +1,5 @@
 {
-    "distance": 46531.3,
+    "distance": 24373.3,
     "points": [
         {"x": 50526, "y": 29984, "id": "022"},
         {"x": 50626, "y": 30078, "id": "Nentor Waypoint"},
@@ -19,6 +19,6 @@
         {"x": 52056, "y": 31606, "id": "Lamentation Waypoint"},
         {"x": 51645, "y": 30941, "id": "Pinnacle Enclave Waypoint"},
         {"x": 51805, "y": 29889, "id": "Thunderhorns Waypoint"},
-        {"x": 51946, "y": 29572, "id": "033"}
+        {"x": 51875, "y": 29785, "id": "033"}
     ]
 }

@@ -1,5 +1,5 @@
 {
-    "distance": 48063.8,
+    "distance": 22237.4,
     "points": [
         {"x": 38742, "y": 31988, "id": "005"},
         {"x": 38936, "y": 31509, "id": "Proxemics Lab Waypoint"},
@@ -15,6 +15,6 @@
         {"x": 41833, "y": 32676, "id": "Watchful Source Waypoint"},
         {"x": 40859, "y": 32459, "id": "Tunnels Waypoint"},
         {"x": 40733, "y": 33298, "id": "Mrot Boru Waypoint"},
-        {"x": 40850, "y": 33654, "id": "007"}
+        {"x": 40779, "y": 33405, "id": "007"}
     ]
 }

@@ -1,5 +1,5 @@
 {
-    "distance": 46398.4,
+    "distance": 24240.3,
     "points": [
         {"x": 52112, "y": 32964, "id": "030"},
         {"x": 52020, "y": 33007, "id": "Winterthaw Waypoint"},
@@ -19,6 +19,6 @@
         {"x": 50626, "y": 30078, "id": "Nentor Waypoint"},
         {"x": 51056, "y": 30097, "id": "Icedevil's Waypoint"},
         {"x": 51805, "y": 29889, "id": "Thunderhorns Waypoint"},
-        {"x": 51946, "y": 29572, "id": "033"}
+        {"x": 51875, "y": 29785, "id": "033"}
     ]
 }

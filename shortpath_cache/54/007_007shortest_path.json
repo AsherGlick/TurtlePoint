@@ -1,7 +1,7 @@
 {
-    "distance": 48675.1,
+    "distance": 22743.6,
     "points": [
-        {"x": 40850, "y": 33654, "id": "007"},
+        {"x": 40779, "y": 33405, "id": "007"},
         {"x": 41833, "y": 32676, "id": "Watchful Source Waypoint"},
         {"x": 41907, "y": 31191, "id": "Wendon Waypoint"},
         {"x": 41275, "y": 31983, "id": "East End Waypoint"},
@@ -15,6 +15,6 @@
         {"x": 40015, "y": 32542, "id": "Ulta Metamagicals Waypoint"},
         {"x": 39870, "y": 33051, "id": "Mirkrise Waypoint"},
         {"x": 40733, "y": 33298, "id": "Mrot Boru Waypoint"},
-        {"x": 40850, "y": 33654, "id": "007"}
+        {"x": 40779, "y": 33405, "id": "007"}
     ]
 }

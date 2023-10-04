@@ -1,5 +1,5 @@
 {
-    "distance": 48562.8,
+    "distance": 22736.4,
     "points": [
         {"x": 38807, "y": 33489, "id": "006"},
         {"x": 38992, "y": 32509, "id": "Triforge Point Waypoint"},
@@ -15,6 +15,6 @@
         {"x": 40015, "y": 32542, "id": "Ulta Metamagicals Waypoint"},
         {"x": 39870, "y": 33051, "id": "Mirkrise Waypoint"},
         {"x": 40733, "y": 33298, "id": "Mrot Boru Waypoint"},
-        {"x": 40850, "y": 33654, "id": "007"}
+        {"x": 40779, "y": 33405, "id": "007"}
     ]
 }

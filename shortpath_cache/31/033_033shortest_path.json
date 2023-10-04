@@ -1,7 +1,7 @@
 {
-    "distance": 54441.1,
+    "distance": 36354.2,
     "points": [
-        {"x": 51875, "y": 29785, "id": "033"},
+        {"x": 51946, "y": 29572, "id": "033"},
         {"x": 52374, "y": 29244, "id": "Valslake Waypoint"},
         {"x": 53033, "y": 29370, "id": "Exile Waypoint"},
         {"x": 54246, "y": 29308, "id": "Owl Waypoint"},
@@ -21,6 +21,6 @@
         {"x": 51256, "y": 28735, "id": "Frozen Sweeps Waypoint"},
         {"x": 51949, "y": 28780, "id": "Snowdrift Haven Waypoint"},
         {"x": 51814, "y": 29365, "id": "Lornar's Waypoint"},
-        {"x": 51875, "y": 29785, "id": "033"}
+        {"x": 51946, "y": 29572, "id": "033"}
     ]
 }

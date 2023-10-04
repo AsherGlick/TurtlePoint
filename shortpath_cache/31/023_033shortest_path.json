@@ -1,5 +1,5 @@
 {
-    "distance": 53638.5,
+    "distance": 35748.4,
     "points": [
         {"x": 50548, "y": 29138, "id": "023"},
         {"x": 50594, "y": 29086, "id": "Skradden Waypoint"},
@@ -21,6 +21,6 @@
         {"x": 53033, "y": 29370, "id": "Exile Waypoint"},
         {"x": 52374, "y": 29244, "id": "Valslake Waypoint"},
         {"x": 51814, "y": 29365, "id": "Lornar's Waypoint"},
-        {"x": 51875, "y": 29785, "id": "033"}
+        {"x": 51946, "y": 29572, "id": "033"}
     ]
 }

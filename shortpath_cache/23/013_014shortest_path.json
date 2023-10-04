@@ -1,7 +1,7 @@
 {
-    "distance": 49459.3,
+    "distance": 49371.8,
     "points": [
-        {"x": 45000, "y": 30412, "id": "013"},
+        {"x": 45002, "y": 30525, "id": "013"},
         {"x": 45163, "y": 30664, "id": "Sojourner's Waypoint"},
         {"x": 45766, "y": 30799, "id": "Delanian Waypoint"},
         {"x": 45432, "y": 31161, "id": "Earthworks Camp Waypoint"},

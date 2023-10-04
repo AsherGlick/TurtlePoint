@@ -1,5 +1,5 @@
 {
-    "distance": 46088.8,
+    "distance": 23930.8,
     "points": [
         {"x": 50563, "y": 34212, "id": "028"},
         {"x": 50668, "y": 34081, "id": "Demon's Maw Waypoint"},
@@ -19,6 +19,6 @@
         {"x": 50626, "y": 30078, "id": "Nentor Waypoint"},
         {"x": 51056, "y": 30097, "id": "Icedevil's Waypoint"},
         {"x": 51805, "y": 29889, "id": "Thunderhorns Waypoint"},
-        {"x": 51946, "y": 29572, "id": "033"}
+        {"x": 51875, "y": 29785, "id": "033"}
     ]
 }

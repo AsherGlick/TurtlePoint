@@ -1,7 +1,7 @@
 {
-    "distance": 50682.4,
+    "distance": 50595,
     "points": [
-        {"x": 45000, "y": 30412, "id": "013"},
+        {"x": 45002, "y": 30525, "id": "013"},
         {"x": 45163, "y": 30664, "id": "Sojourner's Waypoint"},
         {"x": 44559, "y": 30633, "id": "Cavernhold Camp Waypoint"},
         {"x": 44257, "y": 30860, "id": "Gap Waypoint"},
