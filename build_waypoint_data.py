@@ -22,7 +22,7 @@ def get_waypoint_data():
 
     waypoints = {}
     for map_id in central_tyria_map_ids:
-        waypoints[map_id] = get_map_wapoints(str(map_id))
+        waypoints[str(map_id)] = get_map_wapoints(str(map_id))
 
     with open("waypoint_cache.json", "w") as f:
         json.dump(waypoints, f, indent=4)
@@ -57,6 +57,6 @@ def get_map_wapoints(map_id: str):
 
         for _, poi in floor_info["points_of_interest"].items():
             if poi["type"] == "waypoint":
-                waypoints[poi["id"]] = poi
+                waypoints[str(poi["id"])] = poi
 
     return list(waypoints.values())
