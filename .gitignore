@@ -3,3 +3,4 @@ __pycache__/
 api_cache/
 venv/
 wiki_cache/
+waypoint_cache.json
