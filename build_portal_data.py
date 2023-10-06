@@ -122,7 +122,21 @@ def get_portal_data() -> Dict[int, List[PortalInfo]]:
 	return portals
 
 
+################################################################################
+# get_portals_between
+#
+# Gets the list of all of the portals that are between two maps.
+################################################################################
+def get_portals_between(map_a: int, map_b: int) -> List[Portal]:
+	connection_list: List[Portal] = []
+	for portal in raw_portals:
+		if (
+			portal.eastmost_map == map_a and portal.westmost_map == map_b
+			or portal.eastmost_map == map_b and portal.westmost_map == map_a
+		):
+			connection_list.append(portal)
 
+	return connection_list
 
 
 ################################################################################
