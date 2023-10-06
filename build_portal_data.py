@@ -16,12 +16,6 @@ class Portal():
 	eastmost_map: MapInfo
 	eastmost_portal_position: Tuple[float, float]
 
-	def fixed_westmost_portal_position(self) -> Tuple[float, float]:
-		return self.westmost_portal_position
-
-	def fixed_eastmost_portal_position(self) -> Tuple[float, float]:
-		return self.eastmost_portal_position
-
 
 def eod_fix(x: float, y: float) -> Tuple[float, float]:
 	return (
@@ -139,12 +133,12 @@ if __name__ == "__main__":
 		if portal.westmost_portal_position[0] > portal.eastmost_portal_position[0]:
 			print("Flipped Portals in id", portal.identifier)
 
-		if not within_bounds(portal.fixed_westmost_portal_position(), portal.westmost_map.bounding_box):
+		if not within_bounds(portal.westmost_portal_position, portal.westmost_map.bounding_box):
 			print("Westmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.westmost_map.n))
-			print(portal.fixed_westmost_portal_position(), portal.westmost_map.bounding_box)
-		if not within_bounds(portal.fixed_eastmost_portal_position(), portal.eastmost_map.bounding_box):
+			print(portal.westmost_portal_position, portal.westmost_map.bounding_box)
+		if not within_bounds(portal.eastmost_portal_position, portal.eastmost_map.bounding_box):
 			print("Eastmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.eastmost_map.n))
-			print(portal.fixed_eastmost_portal_position(), portal.eastmost_map.bounding_box)
+			print(portal.eastmost_portal_position, portal.eastmost_map.bounding_box)
 
 	from wiki_request import get_portal_counts
 	from map_info import central_tyria_map_ids
