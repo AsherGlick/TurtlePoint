@@ -6,9 +6,6 @@ from dict_diff import dict_diff
 import json
 
 
-ContinentCoordinatePreEODOffset = (+32768, +16384)
-
-
 @dataclass
 class Portal():
 	identifier: str
@@ -28,8 +25,8 @@ class Portal():
 
 def eod_fix(x: float, y: float) -> Tuple[float, float]:
 	return (
-		x + ContinentCoordinatePreEODOffset[0],
-		y + ContinentCoordinatePreEODOffset[1],
+		x + 32768,
+		y + 16384,
 	)
 
 raw_portals: List[Portal] = [
@@ -123,12 +120,6 @@ def get_portal_data() -> Dict[int, List[PortalInfo]]:
 		for map_id, point in portal_info:
 			if map_id not in portals:
 				portals[map_id] = []
-
-			if portal.pre_eod:
-				point = (
-					point[0]+ContinentCoordinatePreEODOffset[0],
-					point[1]+ContinentCoordinatePreEODOffset[1]
-				)
 
 			portals[map_id].append(PortalInfo(
 				uid=portal.identifier,
