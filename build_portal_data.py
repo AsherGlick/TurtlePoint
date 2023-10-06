@@ -124,15 +124,60 @@ def get_portal_data() -> Dict[int, List[PortalInfo]]:
 
 
 
-def within_bounds(point: Tuple[float, float], bounds: Tuple[Tuple[float, float], Tuple[float, float]]):
-	return bounds[0][0] < point[0] and point[0] < bounds[1][0] and bounds[0][1] < point[1] and point[1] < bounds[1][1]
+
+################################################################################
+# within_bounds
+#
+# A helper function used to determine if a specific point is within the bounds
+# of a box defined by two a top left corner and a bottom right corner point.
+################################################################################
+def within_bounds(
+	point: Tuple[float, float],
+	bounds: Tuple[Tuple[float, float], Tuple[float, float]]
+):
+	return (
+		bounds[0][0] < point[0]
+		and point[0] < bounds[1][0]
+		and bounds[0][1] < point[1]
+		and point[1] < bounds[1][1]
+	)
 
 
-if __name__ == "__main__":
+################################################################################
+# sanity_check_portals
+#
+# A wrapper function to call the various sanity checkers on the portal data.
+# This is done because there is no source of truth for the portal data in the
+# api. So these checks are done to allow us to be as certian as we can be about
+# the location and existance of portals given the information we have access
+# to query.
+################################################################################
+def sanity_check_portals():
+	sanity_check_eastmost_westmost_portal_location()
+	sanity_check_portals_within_map_bounding_box()
+	sanity_check_portal_quantity_and_destination_map_from_connectsto_wiki_data()
+
+
+################################################################################
+# sanity_check_eastmost_westmost_portal_location
+#
+# A simple check to make sure the westmost portal is actually the most west of
+# the two portals, and the eastmost is the most east.
+################################################################################
+def sanity_check_eastmost_westmost_portal_location():
 	for portal in raw_portals:
 		if portal.westmost_portal_position[0] > portal.eastmost_portal_position[0]:
 			print("Flipped Portals in id", portal.identifier)
 
+
+################################################################################
+# sanity_check_portals_within_map_bounding_box
+#
+# Sanity checks that for each end of a portal, that portal's location is
+# actually in the map it says it is a part of
+################################################################################
+def sanity_check_portals_within_map_bounding_box():
+	for portal in raw_portals:
 		if not within_bounds(portal.westmost_portal_position, portal.westmost_map.bounding_box):
 			print("Westmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.westmost_map.n))
 			print(portal.westmost_portal_position, portal.westmost_map.bounding_box)
@@ -140,10 +185,20 @@ if __name__ == "__main__":
 			print("Eastmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.eastmost_map.n))
 			print(portal.eastmost_portal_position, portal.eastmost_map.bounding_box)
 
+
+################################################################################
+# sanity_check_portal_quantity_and_destination_map
+#
+# Queries data out of the gw2 wiki, and validates that it lines up with the
+# data we have. The wiki has a field called "Connects To" which contains the
+# information about which maps this map connects to via portals. This validates
+# that the data we have for which maps connect to what other maps, and how many
+# times, lines up with the data on the wiki.
+################################################################################
+def sanity_check_portal_quantity_and_destination_map_from_connectsto_wiki_data():
 	from wiki_request import get_portal_counts
 	from map_info import central_tyria_map_ids
 	wiki_portal_counts = get_portal_counts()
-
 
 	local_portal_counts = {}
 
@@ -157,7 +212,6 @@ if __name__ == "__main__":
 		if portal.eastmost_map.n not in local_portal_counts:
 			local_portal_counts[portal.eastmost_map.n] = {}
 
-
 		if portal.eastmost_map.n not in local_portal_counts[portal.westmost_map.n]:
 			local_portal_counts[portal.westmost_map.n][portal.eastmost_map.n] = 0
 		if portal.westmost_map.n not in local_portal_counts[portal.eastmost_map.n]:
@@ -166,9 +220,12 @@ if __name__ == "__main__":
 		local_portal_counts[portal.westmost_map.n][portal.eastmost_map.n] += 1
 		local_portal_counts[portal.eastmost_map.n][portal.westmost_map.n] += 1
 
-
 	difflines = dict_diff(local_portal_counts, wiki_portal_counts)
 	if len(difflines) > 0:
 		print("Found diff between local data and Wiki Data")
 	for line in difflines:
 		print(line)
+
+
+if __name__ == "__main__":
+	sanity_check_portals()
