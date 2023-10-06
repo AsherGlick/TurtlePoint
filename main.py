@@ -1,27 +1,32 @@
 from hashlib import new
-from typing import Tuple, List, Any
-from dataclasses import dataclass
+from typing import Tuple, List, Any, Optional
+from dataclasses import dataclass, field
 from build_waypoint_data import get_waypoint_data
 from build_portal_data import get_portal_data
 import math
 import os
 
+from map_info import central_tyria_map_ids
 
 from map_info import M
 from subprocess import Popen, PIPE
 import json
 
 
-
+################################################################################
+#
+################################################################################
 @dataclass
 class Segment:
     # start: Any
     map_itself: Any
     # next_map: Any
-    injected_points: List[List["Segment"]] = []
+    injected_points: List[List["Segment"]] = field(default_factory=list)
 
+
+# The segments
 segments = [
-    "start",
+    Segment(M.RATA_SUM), # Start
     Segment(M.RATA_SUM),
     Segment(M.METRICA_PROVINCE),
     Segment(M.CALEDON_FOREST, [
@@ -63,7 +68,7 @@ segments = [
     Segment(M.STRAITS_OF_DEVASTATION),
     Segment(M.MALCHORS_LEAP),
     Segment(M.CURSED_SHORE),
-    "end",
+    None, # End
 ]
 
 
@@ -75,14 +80,60 @@ waypoint_data = get_waypoint_data()
 portal_data = get_portal_data()
 
 
+################################################################################
+#
+################################################################################
 @dataclass
 class Point:
     x: float
     y: float
+    end_x: float
+    eny_y: float
     identifier: str
+    can_waypoint_teleport_to: bool
+
+    def __init__(
+        self,
+        x: float,
+        y: float,
+        identifier: str,
+        end_x: Optional[float] = None,
+        end_y: Optional[float] = None,
+        can_waypoint_teleport_to: bool = True
+    ):
+        self.x = x
+        self.y = y
+        self.identifier = identifier
+
+        if end_x is None:
+            end_x = x
+        if end_y is None:
+            end_y = y
+
+        self.end_x = end_x
+        self.end_y = end_y
+        self.can_waypoint_teleport_to = can_waypoint_teleport_to
 
 
-def build_map(map_id: int):
+    ############################################################################
+    # Transforms the args into an arglist array that can be passed as a part of
+    # the call to the cpp solver program.
+    ############################################################################
+    def to_arglist(self) -> List[str]:
+        return [
+            str(self.x),
+            str(self.y),
+            str(self.end_x),
+            str(self.end_y),
+            self.identifier,
+            'T' if self.can_waypoint_teleport_to else 'F',
+        ]
+
+
+################################################################################
+#
+################################################################################
+def build_map(map_id: int, in_map_id: int, out_map_id: int):
 
     # <mapid>/<start><end>.json
 
@@ -148,14 +199,10 @@ def get_shortest_path(
         with open(cachepath, 'r') as f:
             data = json.load(f)
     else:
-        args = [
-            str(start_point.x),
-            str(start_point.y),
-            start_point.identifier
-        ]
+        args = start_point.to_arglist()
         for point in points_to_hit:
-            args += [str(point.x), str(point.y), point.identifier]
-        args += [str(end_point.x), str(end_point.y), end_point.identifier]
+            args += point.to_arglist()
+        args += end_point.to_arglist()
         process = Popen(["./TurtleRoute/route"] + args, stdout=PIPE)
         (output, err) = process.communicate()
         exit_code = process.wait()
@@ -173,14 +220,15 @@ def get_shortest_path(
     return sorted_points
 
 
-from map_info import central_tyria_map_ids
-
+################################################################################
+#
+################################################################################
 def main():
-    for map_id in central_tyria_map_ids:
-        build_map(map_id)
+    # for map_id in central_tyria_map_ids:
+    #     build_map(map_id)
 
-    
-
+    for segment in segments:
+        print(segment)
 
 
 if __name__ == "__main__":

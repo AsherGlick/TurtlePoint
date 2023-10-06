@@ -46,6 +46,18 @@ class WeightedDistance {
 
     }
 
+    bool operator=(const WeightedDistance& other) const {
+        return walking_distance == other.walking_distance && coin_cost == other.coin_cost;
+    }
+
+    bool operator!=(const WeightedDistance& other) const {
+        return walking_distance != other.walking_distance || coin_cost != other.coin_cost;
+    }
+
+    bool is_negative_one() {
+        return coin_cost == -1 && walking_distance == -1;
+    }
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +150,7 @@ WeightedDistance shortest_distance(
     // then we have already calculated the minimum distance required to visit
     // all the remaining nodes in the graph from this node. No need to
     // recalculate the value.
-    if (shortest_distance_to_end[current_node_index][visited_nodes_biflag] != -1) {
+    if (shortest_distance_to_end[current_node_index][visited_nodes_biflag].is_negative_one()) {
         return shortest_distance_to_end[current_node_index][visited_nodes_biflag];
     }
    
