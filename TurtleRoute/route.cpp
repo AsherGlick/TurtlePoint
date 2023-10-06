@@ -5,10 +5,48 @@
 #include <cmath>
 #include <unordered_map>
 #include <sstream>
-
+#include <algorithm>
 
 using namespace std;
 
+class WeightedDistance {
+ public:
+    double walking_distance;
+    int coin_cost;
+
+
+    WeightedDistance(double d, int c) : walking_distance(d), coin_cost(c) {}
+
+    // Overloaded addition operator
+    WeightedDistance operator+(const WeightedDistance& other) const {
+        return WeightedDistance(
+            walking_distance + other.walking_distance,
+            coin_cost + other.coin_cost
+        );
+    }
+
+    // Overloaded subtraction operator
+    WeightedDistance operator-(const WeightedDistance& other) const {
+        return WeightedDistance(
+            walking_distance - other.walking_distance,
+            coin_cost - other.coin_cost
+        );
+    }
+
+    // Overloaded less than operator
+    bool operator<(const WeightedDistance& other) const {
+        return walking_distance < other.walking_distance 
+            || (walking_distance == other.walking_distance && coin_cost < other.coin_cost);
+    }
+
+    // Overloaded greater than operator
+    bool operator>(const WeightedDistance& other) const {
+        return walking_distance > other.walking_distance 
+            || (walking_distance == other.walking_distance && coin_cost > other.coin_cost);
+
+    }
+
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Point
@@ -18,10 +56,47 @@ using namespace std;
 struct Point {
     float x;
     float y;
+    float exit_x;
+    float exit_y;
     string id;
+    bool can_waypoint_teleport_to;
 
     double distance_to(const Point &p) const {
-        return sqrt((x - p.x) * (x - p.x) + (y - p.y) * (y - p.y));
+        return sqrt(
+            pow(exit_x - p.x, 2)
+            + pow(exit_y - p.y, 2)
+        );
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // weighted_distance_to
+    //
+    // Calculates the weighted distance to a point, taking into account if the
+    // point can be teleported to or not to determine which weight calculation
+    // should be used.
+    ////////////////////////////////////////////////////////////////////////////
+    WeightedDistance weighted_distance_to(const Point &p) const {
+        if (can_waypoint_teleport_to) {
+            return WeightedDistance(0, coin_cost(p));
+        }
+        else {
+            return WeightedDistance(distance_to(p), 0);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // coin_cost
+    //
+    // How many coins waypoint travel will cost from this location to a waypoint
+    // at location p. Algorithim derrived from https://wiki.guildwars2.com/wiki/Waypoint
+    // cost = C1 * [ 0.78 + max(0, (0.0003 / 24) * (Distance - 14400)) ] + C2
+    // using the level 80 values of C1 and C2 (50 and 100 respectively) and
+    // modifying distance to use continent coordinates which are 24 times the
+    // length of the ingame unit. (Ingame units are an inch and continent
+    // coordinates are two feet)
+    ////////////////////////////////////////////////////////////////////////////
+    uint coin_cost(const Point &p) const {
+        return 50 * ( 0.78 + max(0.0, 0.0003 * (this->distance_to(p) - 600))) + 100;
     }
 
     string to_json() {
@@ -32,12 +107,15 @@ struct Point {
 };
 
 
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // shortest_distance
 //
 // A traveling salesman solver
 ////////////////////////////////////////////////////////////////////////////////
-double shortest_distance(
+WeightedDistance shortest_distance(
     // An integer to represent the index of the current node.
     int current_node_index,
 
@@ -45,14 +123,14 @@ double shortest_distance(
     int visited_nodes_biflag,
 
     // Precomputed distance between every node and every other node.
-    const vector<vector<double>> &distances,
+    const vector<vector<WeightedDistance>> &distances,
 
     // A vector of weights from every node to the final node
-    const vector<double> &final_node_distances,
+    const vector<WeightedDistance> &final_node_distances,
 
     // n x 2^n vector cache of minimum distance
     // Cache of shortest distances from current_node to the end for a given visited_nodes_bitflag
-    vector<vector<double>> &shortest_distance_to_end,
+    vector<vector<WeightedDistance>> &shortest_distance_to_end,
     // The optimal next node to achieve the shortest distance stored in shortest_distance_to_end
     vector<vector<int>> &optimal_next_node
 ) {
@@ -70,14 +148,14 @@ double shortest_distance(
         return final_node_distances[current_node_index];
     }
 
-    double minDist = 1e9;
+    WeightedDistance minDist = WeightedDistance(1e9, 1e9);
     int bestNextCity = -1;
 
     // For every node index as i
     for (int i = 0; i < distances.size(); i++) {
         // If we are not currently on the node AND we have not visited it yet.
         if (i != current_node_index && !(visited_nodes_biflag & (1 << i))) {
-            double candidateDist = distances[current_node_index][i]
+            WeightedDistance candidateDist = distances[current_node_index][i]
                 + shortest_distance(
                     i,
                     visited_nodes_biflag | (1 << i),
@@ -100,7 +178,7 @@ double shortest_distance(
 
 
 
-// Usage: ./route <x> <y> <id> [<x> <y> <id>]+
+// Usage: ./route <x> <y> <ex> <ey> <id> <t> [<x> <y> <ex> <ey> <id> <t>]+
 
 // 68 82 a 54 89 b 86 52 c 5 78 d 83 46 e 26 39 f 64 5 g 75 62 h 72 5 i 6 2 j 82 45 k 15 71 l 93 59 m 38 95 n 41 8 o 56 77 p 98 38 q 39 60 r 75 9 s 90 1 t
 
@@ -111,45 +189,48 @@ double shortest_distance(
         // {66, 67},
 
 
+
 int main(int argc, char* argv[]) {
 
     vector<Point> points;
 
-    for (size_t i = 1; i < argc; i+=3){
+    for (size_t i = 1; i < argc; i+=4){
         Point point;
 
         point.x = atoi(argv[i]);
         point.y = atoi(argv[i+1]);
-        point.id = argv[i+2];
+        point.exit_x = atoi(argv[i+2]);
+        point.exit_y = atoi(argv[i+3]);
+        point.id = argv[i+4];
+        point.can_waypoint_teleport_to = argv[i+5][0] == 'T';
 
         points.push_back(point);
     }
     int n = points.size() - 1;
 
     // Build a cache of all the distances between every combination of points.
-    vector<vector<double>> distances(n, vector<double>(n, 0));
+    vector<vector<WeightedDistance>> distances(n, vector<WeightedDistance>(n, WeightedDistance(0, 0)));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            distances[i][j] = points[i].distance_to(points[j]);
+            distances[i][j] = points[i].weighted_distance_to(points[j]);
         }
     }
 
 
     // Build a cache of all the distances from every node to the final node
-    vector<double> final_node_distances(n, 0);
-    int FINAL_TRAVERSAL_WEIGHT_MULTIPLIER = 100;
+    vector<WeightedDistance> final_node_distances(n, WeightedDistance(0, 0));
     for (int i = 0; i < n; i++) {
-        final_node_distances[i] = FINAL_TRAVERSAL_WEIGHT_MULTIPLIER * points[i].distance_to(points[points.size() - 1]);
+        final_node_distances[i] = points[i].weighted_distance_to(points[points.size() - 1]);
     }
 
 
     // Prep the cache 
-    vector<vector<double>> shortest_distance_to_end(n, vector<double>(1 << n, -1));
+    vector<vector<WeightedDistance>> shortest_distance_to_end(n, vector<WeightedDistance>(1 << n, WeightedDistance(-1, -1)));
     vector<vector<int>> optimal_next_node(n, vector<int>(1 << n, -1));
 
 
     // With a fixed starting point, calculate the shortest distance to all other points
-    double shortestPath = shortest_distance(
+    WeightedDistance shortestPath = shortest_distance(
         0,
         1,
         distances,
@@ -166,7 +247,8 @@ int main(int argc, char* argv[]) {
     int current_visited = 1;
 
     cout << "{" << endl;
-    cout << "    \"distance\": " << shortestPath << "," << endl;
+    cout << "    \"walking_distance\": " << shortestPath.walking_distance << "," << endl;
+    cout << "    \"teleporting_cost\": " << shortestPath.coin_cost << "," << endl;
     cout << "    \"points\": [" << endl;
     cout  << "        " << points[current_node].to_json() <<  "," << endl;
     while (true) {
