@@ -1,5 +1,5 @@
 from map_info import M
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, List, Optional
 from dataclasses import dataclass
 from map_info import MapInfo
 from dict_diff import dict_diff
@@ -16,6 +16,20 @@ class Portal():
 	eastmost_map: MapInfo
 	eastmost_portal_position: Tuple[float, float]
 
+
+	def get_point_in_map(self, target_map: MapInfo) -> 'PortalInfo':
+		if target_map == self.westmost_map:
+			return PortalInfo(
+				uid=self.identifier,
+				location=self.westmost_portal_position
+			)
+		elif target_map == self.eastmost_map:
+			return PortalInfo(
+				uid=self.identifier,
+				location=self.eastmost_portal_position
+			)
+		else:
+			raise ValueError("This portal does not exist in map")
 
 def eod_fix(x: float, y: float) -> Tuple[float, float]:
 	return (
@@ -127,7 +141,7 @@ def get_portal_data() -> Dict[int, List[PortalInfo]]:
 #
 # Gets the list of all of the portals that are between two maps.
 ################################################################################
-def get_portals_between(map_a: int, map_b: int) -> List[Portal]:
+def get_portals_between(map_a: MapInfo, map_b: MapInfo) -> List[Portal]:
 	connection_list: List[Portal] = []
 	for portal in raw_portals:
 		if (
