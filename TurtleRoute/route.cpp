@@ -249,16 +249,12 @@ WeightedDistance shortest_distance(
 int main(int argc, char* argv[]) {
     vector<Point> points;
 
-    for (size_t i = 1; i < argc; i+=7){
+    for (size_t i = 1; i < argc; i+=4){
         Point point;
-
-        point.x = atoi(argv[i]);
-        point.y = atoi(argv[i+1]);
-        point.exit_x = atoi(argv[i+2]);
-        point.exit_y = atoi(argv[i+3]);
-        point.id = argv[i+4];
-        point.can_waypoint_teleport_to = argv[i+5][0] == 'T';
-        point.extra_weight = WeightedDistance(argv[i+6]);
+        point.assign_position_from_string(argv[i]);
+        point.id = argv[i+1];
+        point.can_waypoint_teleport_to = argv[i+2][0] == 'T';
+        point.extra_weight = WeightedDistance(argv[i+3]);
 
         points.push_back(point);
     }

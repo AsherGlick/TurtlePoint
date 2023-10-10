@@ -1,16 +1,20 @@
 from hashlib import new
-from typing import Tuple, List, Any, Optional
+from typing import Tuple, List, Any, Optional, TypeVar
 from dataclasses import dataclass, field
 from build_waypoint_data import get_waypoint_data
-from build_portal_data import get_portal_data
+from build_portal_data import PortalInfo, get_portal_data, get_portals_between
 import math
 import os
 
-from map_info import central_tyria_map_ids
+import hashlib
+from map_info import MapInfo, central_tyria_map_ids
 
 from map_info import M
 from subprocess import Popen, PIPE
 import json
+from itertools import product
+
+
 
 
 ################################################################################
@@ -19,65 +23,10 @@ import json
 @dataclass
 class Segment:
     # start: Any
-    map_itself: Any
+    map_itself: MapInfo
     # next_map: Any
     injected_points: List[List["Segment"]] = field(default_factory=list)
 
-
-# The segments
-segments = [
-    Segment(M.RATA_SUM), # Start
-    Segment(M.RATA_SUM),
-    Segment(M.METRICA_PROVINCE),
-    Segment(M.CALEDON_FOREST, [
-        [Segment(M.THE_GROVE)],
-    ]),
-    Segment(M.BRISBAN_WILDLANDS, [
-        [Segment(M.DRY_TOP)],
-        [Segment(M.THE_SILVERWASTES)],
-    ]),
-    Segment(M.KESSEX_HILLS),
-    Segment(M.QUEENSDALE),
-    Segment(M.GENDARRAN_FIELDS, [
-        [Segment(M.HARATHI_HINTERLANDS)],
-    ]),
-    Segment(M.LIONS_ARCH, [
-        [Segment(M.SOUTHSUN_COVE)],
-        [
-            Segment(M.BLACK_CITADEL),
-            Segment(M.BLACK_CITADEL),
-            Segment(M.PLAINS_OF_ASHFORD),
-            Segment(M.DIESSA_PLATEAU),
-            Segment(M.WAYFARER_FOOTHILLS),
-            Segment(M.HOELBRAK),
-            Segment(M.DREDGEHAUNT_CLIFFS),
-            Segment(M.TIMBERLINE_FALLS),
-            Segment(M.LORNARS_PASS),
-            Segment(M.SNOWDEN_DRIFTS),
-            Segment(M.FROSTGORGE_SOUND),
-            Segment(M.FIREHEART_RISE),
-            Segment(M.IRON_MARCHES),
-            Segment(M.BLAZERIDGE_STEPPES),
-            Segment(M.FIELDS_OF_RUIN),
-            Segment(M.DIVINITYS_REACH),
-        ],
-    ]),
-    Segment(M.BLOODTIDE_COAST),
-    Segment(M.SPARKFLY_FEN),
-    Segment(M.MOUNT_MAELSTROM),
-    Segment(M.STRAITS_OF_DEVASTATION),
-    Segment(M.MALCHORS_LEAP),
-    Segment(M.CURSED_SHORE),
-    None, # End
-]
-
-
-
-
-# This file will load all the things that need to be loaded
-
-waypoint_data = get_waypoint_data()
-portal_data = get_portal_data()
 
 
 ################################################################################
@@ -88,9 +37,11 @@ class Point:
     x: float
     y: float
     end_x: float
-    eny_y: float
+    end_y: float
     identifier: str
     can_waypoint_teleport_to: bool
+    walking_distance=0
+    teleporting_cost=0
 
     def __init__(
         self,
@@ -99,7 +50,10 @@ class Point:
         identifier: str,
         end_x: Optional[float] = None,
         end_y: Optional[float] = None,
-        can_waypoint_teleport_to: bool = True
+        can_waypoint_teleport_to: bool = True,
+        walking_distance: float = 0,
+        teleporting_cost: int = 0,
+
     ):
         self.x = x
         self.y = y
@@ -114,53 +68,52 @@ class Point:
         self.end_y = end_y
         self.can_waypoint_teleport_to = can_waypoint_teleport_to
 
+        self.walking_distance = walking_distance
+        self.teleporting_cost = teleporting_cost
+
+    ############################################################################
+    @staticmethod
+    def from_portal_info(portal: PortalInfo) -> 'Point':
+        return Point(
+            x=portal.location[0],
+            y=portal.location[1],
+            identifier=portal.uid,
+            can_waypoint_teleport_to=False,
+        )
 
     ############################################################################
     # Transforms the args into an arglist array that can be passed as a part of
     # the call to the cpp solver program.
     ############################################################################
     def to_arglist(self) -> List[str]:
+
+        position: str
+
+        if self.x == self.end_x and self.y == self.end_y:
+            position = "{}:{}".format(self.x, self.y)
+        else:
+            position = "{}:{}:{}:{}".format(self.x, self.y, self.end_x, self.end_y)
+
         return [
-            str(self.x),
-            str(self.y),
-            str(self.end_x),
-            str(self.end_y),
+            position,
             self.identifier,
             'T' if self.can_waypoint_teleport_to else 'F',
+            "0:0", # TODO make this the extra weight of the path
         ]
 
 
-################################################################################
-#
-################################################################################
-def build_map(map_id: int, in_map_id: int, out_map_id: int):
 
-    # <mapid>/<start><end>.json
-
-    # Build the pointarray that will be used to calculate the shortest path
-    pointarray: List[Point] = []
-    for point in waypoint_data[str(map_id)]:
-        pointarray.append(Point(
-            point["coord"][0],
-            point["coord"][1],
-            point["name"],
-        ))
+@dataclass
+class PointPath():
+    walking_distance: float
+    teleporting_cost: int
+    points: List[Point]
 
 
-    for combination in every_combination_between_zero_and(len(portal_data[map_id])):
-        start = Point(
-            portal_data[map_id][combination[0]].location[0],
-            portal_data[map_id][combination[0]].location[1],
-            str(portal_data[map_id][combination[0]].uid),
-        )
-        end = Point(
-            portal_data[map_id][combination[1]].location[0],
-            portal_data[map_id][combination[1]].location[1],
-            str(portal_data[map_id][combination[1]].uid),
-        )
 
-        print("Shortest Path of {} nodes:".format(len(pointarray)))
-        print(get_shortest_path(start, pointarray, end, map_id))
+# This file will load all the things that need to be loaded
+waypoint_data = get_waypoint_data()
+portal_data = get_portal_data()
 
 
 ################################################################################
@@ -180,6 +133,7 @@ def every_combination_between_zero_and(value: int):
             second = first
 
 
+
 ################################################################################
 #
 ################################################################################
@@ -187,24 +141,32 @@ def get_shortest_path(
     start_point: Point,
     points_to_hit: List[Point],
     end_point: Point,
-    map_id: int
-):
-    cachename = start_point.identifier + "_" + end_point.identifier + "shortest_path.json"
-    cachedir = os.path.join("shortpath_cache", str(map_id))
+    map_id: int,
+) -> PointPath:
+    cachedir = os.path.join("shortpath_cache2", str(map_id))
     os.makedirs(cachedir, exist_ok=True)
-    cachepath = os.path.join(cachedir, cachename)
+
+    points_to_hit = sorted(points_to_hit, key=lambda x: x.__repr__())
+
+    args = start_point.to_arglist()
+    for point in points_to_hit:
+        args += point.to_arglist()
+    args += end_point.to_arglist()
+
+
+    argument_hash = hashlib.new('sha256')
+    argument_hash.update(str(args).encode())
+    # print(argument_hash.hexdigest())
+    cachepath = os.path.join(cachedir, argument_hash.hexdigest() + ".json")
+
 
     data = {}
     if os.path.exists(cachepath):
         with open(cachepath, 'r') as f:
             data = json.load(f)
     else:
-        args = start_point.to_arglist()
-        for point in points_to_hit:
-            args += point.to_arglist()
-        args += end_point.to_arglist()
         process = Popen(["./TurtleRoute/route"] + args, stdout=PIPE)
-        (output, err) = process.communicate()
+        output, err = process.communicate()
         exit_code = process.wait()
 
         data = json.loads(output)
@@ -212,23 +174,343 @@ def get_shortest_path(
         with open(cachepath, 'wb') as f:
             f.write(output) 
 
-    print(data)
-
     sorted_points: List[Point] = []
     for point in data["points"]:
-        sorted_points.append(Point(point["x"], point["y"], point["id"]))
-    return sorted_points
+        sorted_points.append(Point(
+            x=point["x"],
+            y=point["y"],
+            identifier=point["id"],
+            end_x=point["exit_x"],
+            end_y=point["exit_y"],
+        ))
+        # Validate the start point is the start point
+        # Validate the end point is the end point
+        # Search for all the other points using position and id and stuff
+        # Product a PointPath data type that can be returned.
+
+    point_path = PointPath(
+        walking_distance=data["walking_distance"],
+        teleporting_cost=data["teleporting_cost"],
+        points=sorted_points
+    )
+
+    return point_path
+
+
+################################################################################
+#
+################################################################################
+def get_shortest_path_through_map(
+    previous_map: MapInfo,
+    current_map: MapInfo,
+    next_map: Optional[MapInfo],
+    additional_points: List[List[Point]]
+) -> List[PointPath]:
+
+    waypoints: List[Point] = []
+    for point in waypoint_data[str(current_map.i)]:
+        waypoints.append(Point(
+            point["coord"][0],
+            point["coord"][1],
+            point["name"],
+        ))
+
+
+    combinations = [list(comb) for comb in product(*additional_points)]
+    print(additional_points)
+
+    out_points: List[PointPath] = []
+
+    start_portals = get_portals_between(previous_map, current_map)
+    if next_map is not None:
+        end_portals = get_portals_between(current_map, next_map)
+
+        for start_portal in start_portals:
+            for end_portal in end_portals:
+                start = start_portal.get_point_in_map(current_map)
+                end = end_portal.get_point_in_map(current_map)
+
+                point_path = get_shortest_path(
+                    Point.from_portal_info(start),
+                    waypoints + [],
+                    Point.from_portal_info(end),
+                    current_map.i,
+                )
+                out_points.append(point_path)
+    else:
+        for start_portal in start_portals:
+
+            start = start_portal.get_point_in_map(current_map)
+            # TODO implement the "end anywhere" version
+            point_path = get_shortest_path(
+                Point.from_portal_info(start),
+                waypoints + [],
+                Point.from_portal_info(start),
+                current_map.i,
+            )
+            out_points.append(point_path)
+
+
+    return out_points
+
+
+
+################################################################################
+#
+################################################################################
+def get_shortest_path_through_maplist(
+    segments: List[Segment],
+    origin_map: MapInfo,
+    destination_map: Optional[MapInfo]
+) -> List[List[PointPath]]:
+    shortest_paths: List[List[PointPath]] = []
+
+    previous_map = origin_map
+    for i, segment in enumerate(segments):
+        next_map: Optional[MapInfo] = destination_map
+        if len(segments) > i+1:
+            next_map = segments[i+1].map_itself
+
+        print(previous_map.n, "->", segment.map_itself.n, "->", next_map.n if next_map is not None else "DONE")
+        injected_points: List[List[Point]] = []
+        for submap in segment.injected_points:
+            submap_shortest_paths = get_shortest_path_through_maplist(
+                submap,
+                origin_map=segment.map_itself,
+                destination_map=segment.map_itself
+            )
+
+            combined_shortest_paths = combine_consecutive_point_path_options(submap_shortest_paths)
+            injected_points.append(point_paths_to_in_map_points(
+                combined_shortest_paths,
+                segment.map_itself
+            ))
+
+
+        shortest_path = get_shortest_path_through_map(
+            previous_map,
+            segment.map_itself,
+            next_map,
+            injected_points,
+        )
+
+        shortest_paths.append(shortest_path)
+
+        previous_map = segment.map_itself
+
+    return shortest_paths
+
+
+def point_paths_to_in_map_points(
+    point_paths: List[PointPath],
+    origin_map: MapInfo,
+) -> List[Point]:
+    return [
+        point_path_to_point(point_path, origin_map) for point_path in point_paths
+    ]
+
+
+def point_path_to_point(
+    point_path: PointPath,
+    origin_map: MapInfo,
+) -> Point:
+    return Point(
+        x=point_path.points[0].x,
+        y=point_path.points[0].y,
+        end_x=point_path.points[-1].x,
+        end_y=point_path.points[-1].y,
+        walking_distance=point_path.walking_distance,
+        teleporting_cost=point_path.teleporting_cost,
+        identifier="temp",
+        # this happens to be false for all the points we care about, but...
+        # it might not be universally true. A point path really is just the start node of another ... hmmmmmmmmmmm wait
+        # this whole thing is wrong isnt it...
+        # we actually want to be setting the start x/y and end x/y points to be the portals on the OTHER map not the one the point path is in...
+        can_waypoint_teleport_to=False,
+    )
+
+
+# Should this be recursive? I think it could be recursive
+def combine_consecutive_point_path_options(
+    consecutive_point_path_options: List[List[PointPath]]
+) -> List[PointPath]:
+    # Base case, return the final node's point paths as-is
+    if len(consecutive_point_path_options) == 1:
+        return consecutive_point_path_options[0]
+
+    prefix_paths = consecutive_point_path_options[0]
+    suffix_paths = combine_consecutive_point_path_options(consecutive_point_path_options[1:])
+
+    if len(suffix_paths) < 1:
+        print("we got a null suffix path... bailing out (and cascading the problem up)")
+        return []
+
+
+    # Combine all possible combinations of paths
+    combined_paths: List[PointPath] = []
+    for prefix_path in prefix_paths:
+        for suffix_path in suffix_paths:
+            combined_path = combine_point_paths(prefix_path, suffix_path)
+            if combined_path is None:
+                continue
+
+            # Add the successfully combined path
+            combined_paths.append(combined_path)
+
+
+
+    # Remove duplicate paths by taking the shorter one
+    # there should be exactly len(start_options) * len(end_options) elements returned
+
+    # The start point for each of the possible start paths
+    start_options: List[Point] = [
+        x.points[0] for x in consecutive_point_path_options[0]
+    ]
+
+    # The end point for each of the possible end paths
+    end_options: List[Point] = [
+        x.points[-1] for x in consecutive_point_path_options[-1]
+    ]
+
+
+    filtered_paths: List[PointPath] = []
+
+    for start_option in start_options:
+        for end_option in end_options:
+            matching_combined_paths: List[PointPath] = []
+            for combined_path in combined_paths:
+                if (
+                    combined_path.points[0] == start_option
+                    and combined_path.points[-1] == end_option
+                ):
+                    matching_combined_paths.append(combined_path)
+
+            if len(matching_combined_paths) < 1:
+                raise ValueError("We dont have a matching in-out group here, there is likely a logic error in the code")
+
+            shortest_distance: Tuple[float, int] = (
+                matching_combined_paths[0].walking_distance,
+                matching_combined_paths[0].teleporting_cost,
+            )
+            shortest_path: PointPath  = matching_combined_paths[0]
+
+            for matching_combined_path in matching_combined_paths:
+                distance: Tuple[float, int] = (
+                    matching_combined_path.walking_distance,
+                    matching_combined_path.teleporting_cost
+                )
+                if distance < shortest_distance:
+                    shortest_distance = distance
+                    shortest_path = matching_combined_path
+
+            filtered_paths.append(shortest_path)
+
+    # sanity check
+    if len(filtered_paths) != len(start_options) * len(end_options):
+        print("wat")
+
+    return filtered_paths
+
+
+################################################################################
+# combined_point_path
+#
+# Combines two paths that share a end/start portal node into a single path
+# that travels across all of the points, combining the shared end/start point
+# into a single point along the chain. If the end/start portals do not match
+# then this function returns None
+################################################################################
+def combine_point_paths(first: PointPath, second: PointPath) -> Optional[PointPath]:
+    portal_out = first.points[-1]
+    portal_in = second.points[0]
+
+    # Validate the end and the start portals are linked
+    if (portal_out.identifier != portal_in.identifier):
+        return None
+
+    merged_portal = Point(
+        x=portal_out.x,
+        y=portal_out.y,
+        identifier=portal_out.identifier,
+        end_x=portal_in.x,
+        end_y=portal_in.y,
+        can_waypoint_teleport_to=False,
+        walking_distance=0,
+        teleporting_cost=0,
+    )
+
+    return PointPath(
+        walking_distance=first.walking_distance + second.walking_distance,
+        teleporting_cost=first.teleporting_cost + second.teleporting_cost,
+        points=first.points[:-1] + [merged_portal] + second.points[1:]
+    )
 
 
 ################################################################################
 #
 ################################################################################
 def main():
-    # for map_id in central_tyria_map_ids:
-    #     build_map(map_id)
+    # The segments
+    segments: List[Segment] = [
+        # Start
+        Segment(M.RATA_SUM),
+        Segment(M.METRICA_PROVINCE),
+        Segment(M.CALEDON_FOREST, [
+            [Segment(M.THE_GROVE)],
+        ]),
+        Segment(M.BRISBAN_WILDLANDS, [
+            [Segment(M.DRY_TOP)],
+            [Segment(M.THE_SILVERWASTES)],
+        ]),
+        Segment(M.KESSEX_HILLS),
+        Segment(M.QUEENSDALE),
+        Segment(M.GENDARRAN_FIELDS, [
+            [Segment(M.HARATHI_HINTERLANDS)],
+        ]),
+        Segment(M.LIONS_ARCH, [
+            [Segment(M.SOUTHSUN_COVE)],
+            [
+                Segment(M.BLACK_CITADEL),
+                Segment(M.PLAINS_OF_ASHFORD),
+                Segment(M.DIESSA_PLATEAU),
+                Segment(M.WAYFARER_FOOTHILLS),
+                Segment(M.HOELBRAK),
+                Segment(M.DREDGEHAUNT_CLIFFS),
+                Segment(M.TIMBERLINE_FALLS),
+                Segment(M.LORNARS_PASS),
+                Segment(M.SNOWDEN_DRIFTS),
+                Segment(M.FROSTGORGE_SOUND),
+                Segment(M.FIREHEART_RISE),
+                Segment(M.IRON_MARCHES),
+                Segment(M.BLAZERIDGE_STEPPES),
+                Segment(M.FIELDS_OF_RUIN),
+                Segment(M.DIVINITYS_REACH),
+            ],
+        ]),
+        Segment(M.BLOODTIDE_COAST),
+        Segment(M.SPARKFLY_FEN),
+        Segment(M.MOUNT_MAELSTROM),
+        Segment(M.STRAITS_OF_DEVASTATION),
+        Segment(M.MALCHORS_LEAP),
+        Segment(M.CURSED_SHORE),
+        # End
+    ]
 
-    for segment in segments:
-        print(segment)
+    a: List[List[PointPath]] = get_shortest_path_through_maplist(segments, M.METRICA_PROVINCE, None)
+
+    b = combine_consecutive_point_path_options(a)
+    if len(b) != 1:
+        print("hmmmmmmmmmmm2")
+
+    true_path = b[0]
+
+
+    for point in true_path.points:
+        print("unproject([{}, {}]),".format(point.x, point.y))
+
+    # for path in b:
+    #     print(len(path))
+    #     # print("  ", a)
 
 
 if __name__ == "__main__":
