@@ -152,6 +152,11 @@ def get_portals_between(map_a: MapInfo, map_b: MapInfo) -> List[Portal]:
 
 	return connection_list
 
+def get_portal_by_id(portal_id: str) -> Portal:
+	for portal in raw_portals:
+		if portal.identifier == portal_id:
+			return portal
+	raise ValueError("Invalid portal id", portal_id)
 
 ################################################################################
 # within_bounds

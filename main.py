@@ -2,7 +2,7 @@ from hashlib import new
 from typing import Tuple, List, Any, Optional, TypeVar
 from dataclasses import dataclass, field
 from build_waypoint_data import get_waypoint_data
-from build_portal_data import PortalInfo, get_portal_data, get_portals_between
+from build_portal_data import PortalInfo, get_portal_data, get_portals_between, get_portal_by_id
 import math
 import os
 
@@ -354,33 +354,10 @@ def point_paths_to_in_map_points(
     origin_map: MapInfo,
 ) -> List[Point]:
     return [
-        point_path_to_point(point_path, origin_map) for point_path in point_paths
+        pack_point_path_to_point(point_path, origin_map) for point_path in point_paths
     ]
 
 
-def point_path_to_point(
-    point_path: PointPath,
-    origin_map: MapInfo,
-) -> Point:
-    point = Point(
-        x=point_path.points[0].x,
-        y=point_path.points[0].y,
-        end_x=point_path.points[-1].x,
-        end_y=point_path.points[-1].y,
-        walking_distance=point_path.walking_distance,
-        teleporting_cost=point_path.teleporting_cost,
-        identifier="PointPathSummary", # TODO add some more details to this with what maps it connects from->to etc or just a random number maybe
-
-        # this happens to be false for all the points we care about, but...
-        # it might not be universally true. A point path really is just the start node of another ... hmmmmmmmmmmm wait
-        # this whole thing is wrong isnt it...
-        # we actually want to be setting the start x/y and end x/y points to be the portals on the OTHER map not the one the point path is in...
-        can_waypoint_teleport_to=False,
-    )
-
-    point._point_path_source = point_path
-
-    return point
 
 ################################################################################
 # get_shortest_point_path
@@ -523,12 +500,76 @@ def combine_point_paths(first: PointPath, second: PointPath) -> Optional[PointPa
     )
 
 
+################################################################################
+#
+################################################################################
+def pack_point_path_to_point(
+    point_path: PointPath,
+    origin_map: MapInfo,
+) -> Point:
+
+
+    entrance_portal = get_portal_by_id(point_path.points[0].identifier)
+    exit_portal = get_portal_by_id(point_path.points[-1].identifier)
+
+    entrance_pont = entrance_portal.get_point_in_map(origin_map)
+    exit_point = exit_portal.get_point_in_map(origin_map)
+
+    point = Point(
+        x=entrance_pont.location[0],
+        y=entrance_pont.location[1],
+        end_x=exit_point.location[0],
+        end_y=exit_point.location[1],
+        walking_distance=point_path.walking_distance,
+        teleporting_cost=point_path.teleporting_cost,
+        identifier="PointPathSummary", # TODO add some more details to this with what maps it connects from->to etc or just a random number maybe
+
+        # this happens to be false for all the points we care about, but...
+        # it might not be universally true. A point path really is just the start node of another ... hmmmmmmmmmmm wait
+        # this whole thing is wrong isnt it...
+        # we actually want to be setting the start x/y and end x/y points to be the portals on the OTHER map not the one the point path is in...
+        can_waypoint_teleport_to=False,
+    )
+
+
+    point._point_path_source = point_path
+
+    return point
+
+
+################################################################################
+#
+################################################################################
 def unpack_points(points: PointPath) -> List[Point]:
     output_points: List[Point] = []
     for point in points.points:
-        output_points.append(point)
-        if point._point_path_source is not None:
-            output_points += unpack_points(point._point_path_source)
+        if point._point_path_source is None:
+            output_points.append(point)
+        else:
+
+            subpoints = unpack_points(point._point_path_source)
+
+            output_points.append(Point(
+                x=point.x,
+                y=point.y,
+                end_x=subpoints[0].x,
+                end_y=subpoints[0].y,
+                identifier="fakeportal",
+                can_waypoint_teleport_to=False
+            ))
+            # todo sanity check that subpoints[0] x = end_x y=end_y
+            output_points += subpoints[0:-1]
+
+            output_points.append(Point(
+                x=subpoints[-1].x,
+                y=subpoints[-1].y,
+                end_x=point.end_x,
+                end_y=point.end_y,
+                identifier="fakeportal",
+                can_waypoint_teleport_to=False
+            ))
+            # todo sanity check that subpoints[-1] x = end_x y=end_y
+
     return output_points
 
 
@@ -588,6 +629,8 @@ def main():
     if len(shortest_path) != 1:
         print("hmmmmmmmmmmm2")
 
+
+
     true_path = unpack_points(shortest_path[0])
 
 
@@ -603,6 +646,12 @@ def main():
 
 
     print(len(true_path))
+
+    print("Cost:", shortest_path[0].teleporting_cost)
+    print("Walking:", shortest_path[0].walking_distance)
+
+
+
 
 if __name__ == "__main__":
     main()
