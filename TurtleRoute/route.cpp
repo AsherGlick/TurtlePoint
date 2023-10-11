@@ -27,13 +27,15 @@ class WeightedDistance {
  public:
     double walking_distance;
     int coin_cost;
+    double distance;
 
     WeightedDistance() {
         this->walking_distance = -1;
         this->coin_cost = -1;
+        this->distance = -1;
     }
 
-    WeightedDistance(double d, int c) : walking_distance(d), coin_cost(c) {}
+    WeightedDistance(double walking_distance, int coin_cost, double distance) : walking_distance(walking_distance), coin_cost(coin_cost), distance(distance) {}
 
     WeightedDistance(string input) {
         vector<string> elements = split(input, ":");
@@ -49,7 +51,8 @@ class WeightedDistance {
     WeightedDistance operator+(const WeightedDistance& other) const {
         return WeightedDistance(
             walking_distance + other.walking_distance,
-            coin_cost + other.coin_cost
+            coin_cost + other.coin_cost,
+            distance + other.distance
         );
     }
 
@@ -57,33 +60,58 @@ class WeightedDistance {
     WeightedDistance operator-(const WeightedDistance& other) const {
         return WeightedDistance(
             walking_distance - other.walking_distance,
-            coin_cost - other.coin_cost
+            coin_cost - other.coin_cost,
+            distance - other.distance
         );
     }
 
     // Overloaded less than operator
     bool operator<(const WeightedDistance& other) const {
-        return walking_distance < other.walking_distance 
-            || (walking_distance == other.walking_distance && coin_cost < other.coin_cost);
+        if (walking_distance < other.walking_distance) {
+            return true;
+        }
+        else if (walking_distance == other.walking_distance) {
+            if (coin_cost < other.coin_cost) {
+                return true;
+            }
+            else if (coin_cost == other.coin_cost) {
+                return distance < other.distance;
+            }
+        }
+        return false;
     }
 
     // Overloaded greater than operator
     bool operator>(const WeightedDistance& other) const {
-        return walking_distance > other.walking_distance 
-            || (walking_distance == other.walking_distance && coin_cost > other.coin_cost);
+        if (walking_distance > other.walking_distance) {
+            return true;
+        }
+        else if (walking_distance == other.walking_distance) {
+            if (coin_cost > other.coin_cost) {
+                return true;
+            }
+            else if (coin_cost == other.coin_cost) {
+                return distance > other.distance;
+            }
+        }
+        return false;
 
     }
 
     bool operator==(const WeightedDistance& other) const {
-        return walking_distance == other.walking_distance && coin_cost == other.coin_cost;
+        return walking_distance == other.walking_distance
+            && coin_cost == other.coin_cost
+            && distance == other.distance;
     }
 
     bool operator!=(const WeightedDistance& other) const {
-        return walking_distance != other.walking_distance || coin_cost != other.coin_cost;
+        return walking_distance != other.walking_distance
+        || coin_cost != other.coin_cost
+        || distance != other.distance;
     }
 
     bool is_negative_one() {
-        return coin_cost == -1 && walking_distance == -1;
+        return coin_cost == -1 && walking_distance == -1 && distance == -1;
     }
 
 };
@@ -141,11 +169,11 @@ struct Point {
     // should be used.
     ////////////////////////////////////////////////////////////////////////////
     WeightedDistance weighted_distance_to(const Point &p) const {
-        if (can_waypoint_teleport_to) {
-            return WeightedDistance(0, coin_cost(p));
+        if (p.can_waypoint_teleport_to) {
+            return WeightedDistance(0, coin_cost(p), distance_to(p));
         }
         else {
-            return WeightedDistance(distance_to(p), 0);
+            return WeightedDistance(distance_to(p), 0, distance_to(p));
         }
     }
 
@@ -169,8 +197,8 @@ struct Point {
         s << "{" 
             << "\"x\": " << this->x << ", "
             << "\"y\": " << this->y << ", "
-            << "\"exit_x\": " << this->x << ", "
-            << "\"exit_y\": " << this->y << ", "
+            << "\"exit_x\": " << this->exit_x << ", "
+            << "\"exit_y\": " << this->exit_y << ", "
             << "\"id\": \"" << this->id << "\""
             << "}";
         return s.str();
@@ -216,7 +244,7 @@ WeightedDistance shortest_distance(
         return final_node_distances[current_node_index];
     }
 
-    WeightedDistance minDist = WeightedDistance(1e9, 1e9);
+    WeightedDistance minDist = WeightedDistance(1e9, 1e9, 1e9);
     int bestNextCity = -1;
     // For every node index as i
     for (int i = 0; i < distances.size(); i++) {
@@ -261,7 +289,7 @@ int main(int argc, char* argv[]) {
     int n = points.size() - 1;
 
     // Build a cache of all the distances between every combination of points.
-    vector<vector<WeightedDistance>> distances(n, vector<WeightedDistance>(n, WeightedDistance(0, 0)));
+    vector<vector<WeightedDistance>> distances(n, vector<WeightedDistance>(n, WeightedDistance(0, 0, 0)));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             distances[i][j] = points[i].weighted_distance_to(points[j]);
@@ -270,14 +298,14 @@ int main(int argc, char* argv[]) {
 
 
     // Build a cache of all the distances from every node to the final node
-    vector<WeightedDistance> final_node_distances(n, WeightedDistance(0, 0));
+    vector<WeightedDistance> final_node_distances(n, WeightedDistance(0, 0, 0));
     for (int i = 0; i < n; i++) {
         final_node_distances[i] = points[i].weighted_distance_to(points[points.size() - 1]);
     }
 
 
     // Prep the cache 
-    vector<vector<WeightedDistance>> shortest_distance_to_end(n, vector<WeightedDistance>(1 << n, WeightedDistance(-1, -1)));
+    vector<vector<WeightedDistance>> shortest_distance_to_end(n, vector<WeightedDistance>(1 << n, WeightedDistance(-1, -1, -1)));
     vector<vector<int>> optimal_next_node(n, vector<int>(1 << n, -1));
 
 
