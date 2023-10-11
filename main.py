@@ -7,7 +7,7 @@ import math
 import os
 
 import hashlib
-from leaflet_exports import leaflet_export_paths
+from leaflet_exports import leaflet_export_paths, leaflet_export_waypoints
 from map_info import MapInfo, central_tyria_map_ids
 
 from map_info import M
@@ -498,7 +498,7 @@ def unpack_points(points: PointPath) -> List[Point]:
 ################################################################################
 #
 ################################################################################
-def main():
+def get_full_waypoint_unlock_path():
     # The segments
     segments: List[Segment] = [
         # Start
@@ -564,6 +564,10 @@ def main():
     print("Walking:", shortest_path[0].walking_distance)
 
 
+
+def main():
+    get_full_waypoint_unlock_path()
+    # print(leaflet_export_waypoints(central_tyria_map_ids))
 
 
 if __name__ == "__main__":
