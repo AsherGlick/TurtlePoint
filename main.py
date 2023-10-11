@@ -15,7 +15,7 @@ from subprocess import Popen, PIPE
 import json
 from itertools import product
 from point import Point, PointPath
-
+from taco_exports import export_taco
 
 
 ################################################################################
@@ -556,7 +556,9 @@ def get_full_waypoint_unlock_path():
     true_path = unpack_points(shortest_path[0])
 
 
-    print(leaflet_export_paths(true_path))
+    # print(leaflet_export_paths(true_path))
+
+    export_taco(true_path, "taco_output", central_tyria_map_ids)
 
     print(len(true_path))
 
