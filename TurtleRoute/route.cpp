@@ -10,7 +10,12 @@
 using namespace std;
 
 
-
+////////////////////////////////////////////////////////////////////////////////
+// split
+//
+// A helper function to split a string into a vector of strings based on a
+// specified delimiter.
+////////////////////////////////////////////////////////////////////////////////
 vector<string> split(string input, string delimiter) {
     vector<string> output;
     size_t cursor_position = 0;
@@ -23,20 +28,32 @@ vector<string> split(string input, string delimiter) {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+// WeightedDistance
+//
+// A helper class that is used to allow for multiple values to be tracked,
+// and each of those values has an infinite weight above the next value when
+// it comes to comparisons.
+////////////////////////////////////////////////////////////////////////////////
 class WeightedDistance {
  public:
     double walking_distance;
     int coin_cost;
     double distance;
 
+    // Default constructor, sets all values to -1.
     WeightedDistance() {
         this->walking_distance = -1;
         this->coin_cost = -1;
         this->distance = -1;
     }
 
-    WeightedDistance(double walking_distance, int coin_cost, double distance) : walking_distance(walking_distance), coin_cost(coin_cost), distance(distance) {}
+    // Constructor that takes in values for all three of the member variables.
+    WeightedDistance(double walking_distance, int coin_cost, double distance)
+        : walking_distance(walking_distance), coin_cost(coin_cost), distance(distance) {}
 
+    // Constructor that parses values out of a string with each value in the
+    // string being separated by a ':' character.
     WeightedDistance(string input) {
         vector<string> elements = split(input, ":");
         if (elements.size() != 2) {
@@ -98,18 +115,28 @@ class WeightedDistance {
 
     }
 
+    // Overloaded equality operator
     bool operator==(const WeightedDistance& other) const {
         return walking_distance == other.walking_distance
             && coin_cost == other.coin_cost
             && distance == other.distance;
     }
 
+    // Overloaded not equals operator
     bool operator!=(const WeightedDistance& other) const {
         return walking_distance != other.walking_distance
         || coin_cost != other.coin_cost
         || distance != other.distance;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // is_negative_one
+    //
+    // A helper function to easily identify if this weighed distance is in an
+    // "invalid" or "uninitialized" psuedo state were all the values are set
+    // to -1.
+    // TODO: This concept could be more generalized for the class.
+    ////////////////////////////////////////////////////////////////////////////
     bool is_negative_one() {
         return coin_cost == -1 && walking_distance == -1 && distance == -1;
     }
@@ -151,9 +178,13 @@ struct Point {
             cout << "Invalid Position " << input << endl;
             return;
         }
-
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // distance_to
+    //
+    // A simple Pythagorean theorem distance between two points algorithm.
+    ////////////////////////////////////////////////////////////////////////////
     double distance_to(const Point &p) const {
         return sqrt(
             pow(exit_x - p.x, 2)
@@ -186,12 +217,18 @@ struct Point {
     // using the level 80 values of C1 and C2 (50 and 100 respectively) and
     // modifying distance to use continent coordinates which are 24 times the
     // length of the ingame unit. (Ingame units are an inch and continent
-    // coordinates are two feet)
+    // coordinates are two feet).
     ////////////////////////////////////////////////////////////////////////////
     uint coin_cost(const Point &p) const {
         return 50 * ( 0.78 + max(0.0, 0.0003 * (this->distance_to(p) - 600))) + 100;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // to_json()
+    //
+    // Prints out a json string that contains the information we would like to
+    // return to the user about this Point.
+    ////////////////////////////////////////////////////////////////////////////
     string to_json() {
         stringstream s;
         s << "{" 
@@ -273,7 +310,8 @@ WeightedDistance shortest_distance(
 
 
 
-// Usage: ./route <x> <y> <ex> <ey> <id> <t> <w> [<x> <y> <ex> <ey> <id> <t> <w>]+
+// Usage: ./route <x>:<y>[:<ex>:<ey>] <id> <t> <w>:<w> [<x>:<y>[:<ex>:<ey>] <id> <t> <w>:<w>]+
+// Usage: ./route <x>:<y>[:<ex>:<ey>] <id> <t> <w>:<w> V
 int main(int argc, char* argv[]) {
     vector<Point> points;
     bool any_final_node = false;
@@ -359,6 +397,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-
-
