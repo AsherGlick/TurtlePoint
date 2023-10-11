@@ -142,7 +142,7 @@ def every_combination_between_zero_and(value: int):
 def get_shortest_path(
     start_point: Point,
     points_to_hit: List[Point],
-    end_point: Point,
+    end_point: Optional[Point],
     map_id: int,
 ) -> PointPath:
     cachedir = os.path.join("shortpath_cache2", str(map_id))
@@ -153,7 +153,11 @@ def get_shortest_path(
     args = start_point.to_arglist()
     for point in points_to_hit:
         args += point.to_arglist()
-    args += end_point.to_arglist()
+
+    if end_point is not None:
+        args += end_point.to_arglist()
+    else:
+        args += ['v']
 
 
     argument_hash = hashlib.new('sha256')
@@ -171,6 +175,7 @@ def get_shortest_path(
         output, err = process.communicate()
         exit_code = process.wait()
 
+        print(output)
         data = json.loads(output)
 
         with open(cachepath, 'wb') as f:
@@ -184,7 +189,9 @@ def get_shortest_path(
     sorted_points = [start_point] + find_point_from_reference(
         point_objects=points_to_hit,
         reference=data["points"][1:-1]
-    ) + [end_point]
+    )
+    if end_point is not None:
+        sorted_points.append(end_point)
 
     point_path = PointPath(
         walking_distance=data["walking_distance"],
@@ -286,7 +293,7 @@ def get_shortest_path_through_map(
             point_path = get_shortest_path(
                 Point.from_portal_info(start),
                 waypoints,
-                Point.from_portal_info(start),
+                None,
                 current_map.i,
             )
             out_points.append(point_path)
@@ -586,23 +593,16 @@ def main():
 
     previous_point = true_path[0]
     for point in true_path[1:]:
-
-
-
         if point.can_waypoint_teleport_to:
             print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#FF0000'}}).addTo(map)".format(previous_point.end_x, previous_point.end_y, point.x, point.y))
         else:
             print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#00FF00'}}).addTo(map)".format(previous_point.end_x, previous_point.end_y, point.x, point.y))
-
-
-
         if point.x != point.end_x or point.y != point.end_y:
             print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#A020F080'}}).addTo(map)".format(point.x, point.y, point.end_x, point.end_y))
-
         previous_point = point
 
-            # "L.polyline(unproject([{}, {}], [{}, {}]), {color: 'red'}).addTo(map)"
 
+    print(len(true_path))
 
 if __name__ == "__main__":
     main()

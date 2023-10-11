@@ -276,8 +276,10 @@ WeightedDistance shortest_distance(
 // Usage: ./route <x> <y> <ex> <ey> <id> <t> <w> [<x> <y> <ex> <ey> <id> <t> <w>]+
 int main(int argc, char* argv[]) {
     vector<Point> points;
+    bool any_final_node = false;
 
-    for (size_t i = 1; i < argc; i+=4){
+    size_t i;
+    for (i = 1; i+3 < argc; i+=4){
         Point point;
         point.assign_position_from_string(argv[i]);
         point.id = argv[i+1];
@@ -286,6 +288,17 @@ int main(int argc, char* argv[]) {
 
         points.push_back(point);
     }
+    if (argc == i) {}
+    else if (argc == i+1) {
+        if (argv[i][0] == 'V') {
+            any_final_node = true;
+            points.push_back(Point());
+        }
+    }
+    else {
+        cout << "Invalid argument count" << endl;
+    }
+
     int n = points.size() - 1;
 
     // Build a cache of all the distances between every combination of points.
@@ -299,8 +312,10 @@ int main(int argc, char* argv[]) {
 
     // Build a cache of all the distances from every node to the final node
     vector<WeightedDistance> final_node_distances(n, WeightedDistance(0, 0, 0));
-    for (int i = 0; i < n; i++) {
-        final_node_distances[i] = points[i].weighted_distance_to(points[points.size() - 1]);
+    if (!any_final_node) {
+        for (int i = 0; i < n; i++) {
+            final_node_distances[i] = points[i].weighted_distance_to(points[points.size() - 1]);
+        }
     }
 
 
