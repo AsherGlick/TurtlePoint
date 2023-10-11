@@ -43,6 +43,8 @@ class Point:
     walking_distance=0
     teleporting_cost=0
 
+    _point_path_source: Optional["PointPath"] = field(default=None, repr=False,)
+
     def __init__(
         self,
         x: float,
@@ -98,7 +100,7 @@ class Point:
             position,
             self.identifier,
             'T' if self.can_waypoint_teleport_to else 'F',
-            "0:0", # TODO make this the extra weight of the path
+            "{}:{}".format(self.walking_distance, self.teleporting_cost)
         ]
 
 
@@ -175,18 +177,14 @@ def get_shortest_path(
             f.write(output) 
 
     sorted_points: List[Point] = []
-    for point in data["points"]:
-        sorted_points.append(Point(
-            x=point["x"],
-            y=point["y"],
-            identifier=point["id"],
-            end_x=point["exit_x"],
-            end_y=point["exit_y"],
-        ))
-        # Validate the start point is the start point
-        # Validate the end point is the end point
-        # Search for all the other points using position and id and stuff
-        # Product a PointPath data type that can be returned.
+    # TODO: Sanity check the start point is the start point
+    # TODO: Sanity check the end point is the end point
+
+
+    sorted_points = [start_point] + find_point_from_reference(
+        point_objects=points_to_hit,
+        reference=data["points"][1:-1]
+    ) + [end_point]
 
     point_path = PointPath(
         walking_distance=data["walking_distance"],
@@ -195,6 +193,38 @@ def get_shortest_path(
     )
 
     return point_path
+
+
+################################################################################
+# TODO: better comment
+# looks for exact points from the reference points
+################################################################################
+def find_point_from_reference(point_objects: List[Point], reference: List[Any]) -> List[Point]:
+    out_points: List[Point] = []
+
+    for reference_point in reference:
+        found_point_object: Optional[Point] = None
+        for point_object in point_objects:
+            if (
+                reference_point["x"] == point_object.x
+                and reference_point["y"] == point_object.y
+                and reference_point["id"] == point_object.identifier
+                and reference_point["exit_x"] == point_object.end_x
+                and reference_point["exit_y"] == point_object.end_y
+            ):
+                if found_point_object is None:
+                    found_point_object = point_object
+                else:
+                    print("Duplicate Point Objects found", found_point_object, point_object)
+
+
+        if found_point_object is None:
+            print("    Did not find a point object for", reference_point)
+            print("    ", point_objects)
+        else:
+            out_points.append(found_point_object)
+    
+    return out_points
 
 
 ################################################################################
@@ -217,7 +247,6 @@ def get_shortest_path_through_map(
 
 
     combinations = [list(comb) for comb in product(*additional_points)]
-    print(additional_points)
 
     out_points: List[PointPath] = []
 
@@ -230,13 +259,25 @@ def get_shortest_path_through_map(
                 start = start_portal.get_point_in_map(current_map)
                 end = end_portal.get_point_in_map(current_map)
 
-                point_path = get_shortest_path(
-                    Point.from_portal_info(start),
-                    waypoints + [],
-                    Point.from_portal_info(end),
-                    current_map.i,
-                )
-                out_points.append(point_path)
+                if len(combinations) > 0:
+                    possible_paths: List[PointPath] = []
+                    for combination in combinations:
+                        possible_paths.append(get_shortest_path(
+                            Point.from_portal_info(start),
+                            waypoints + combination,
+                            Point.from_portal_info(end),
+                            current_map.i,
+                        ))
+
+                    out_points.append(get_shortest_point_path(possible_paths))
+                else:
+                    point_path = get_shortest_path(
+                        Point.from_portal_info(start),
+                        waypoints,
+                        Point.from_portal_info(end),
+                        current_map.i,
+                    )
+                    out_points.append(point_path)
     else:
         for start_portal in start_portals:
 
@@ -244,7 +285,7 @@ def get_shortest_path_through_map(
             # TODO implement the "end anywhere" version
             point_path = get_shortest_path(
                 Point.from_portal_info(start),
-                waypoints + [],
+                waypoints,
                 Point.from_portal_info(start),
                 current_map.i,
             )
@@ -314,20 +355,49 @@ def point_path_to_point(
     point_path: PointPath,
     origin_map: MapInfo,
 ) -> Point:
-    return Point(
+    point = Point(
         x=point_path.points[0].x,
         y=point_path.points[0].y,
         end_x=point_path.points[-1].x,
         end_y=point_path.points[-1].y,
         walking_distance=point_path.walking_distance,
         teleporting_cost=point_path.teleporting_cost,
-        identifier="temp",
+        identifier="PointPathSummary", # TODO add some more details to this with what maps it connects from->to etc or just a random number maybe
+
         # this happens to be false for all the points we care about, but...
         # it might not be universally true. A point path really is just the start node of another ... hmmmmmmmmmmm wait
         # this whole thing is wrong isnt it...
         # we actually want to be setting the start x/y and end x/y points to be the portals on the OTHER map not the one the point path is in...
         can_waypoint_teleport_to=False,
     )
+
+    point._point_path_source = point_path
+
+    return point
+
+################################################################################
+# get_shortest_point_path
+#
+# Iterates over a list of PointPaths and returns whichver point path is the
+# shortest. It does not filter on any other criteria like start/end positions.
+################################################################################
+def get_shortest_point_path(point_paths: List[PointPath]) -> PointPath:
+    shortest_distance: Tuple[float, int] = (
+        point_paths[0].walking_distance,
+        point_paths[0].teleporting_cost,
+    )
+    shortest_path: PointPath  = point_paths[0]
+
+    for matching_combined_path in point_paths:
+        distance: Tuple[float, int] = (
+            matching_combined_path.walking_distance,
+            matching_combined_path.teleporting_cost
+        )
+        if distance < shortest_distance:
+            shortest_distance = distance
+            shortest_path = matching_combined_path
+
+    return shortest_path
 
 
 # Should this be recursive? I think it could be recursive
@@ -388,22 +458,22 @@ def combine_consecutive_point_path_options(
             if len(matching_combined_paths) < 1:
                 raise ValueError("We dont have a matching in-out group here, there is likely a logic error in the code")
 
-            shortest_distance: Tuple[float, int] = (
-                matching_combined_paths[0].walking_distance,
-                matching_combined_paths[0].teleporting_cost,
-            )
-            shortest_path: PointPath  = matching_combined_paths[0]
+            # shortest_distance: Tuple[float, int] = (
+            #     matching_combined_paths[0].walking_distance,
+            #     matching_combined_paths[0].teleporting_cost,
+            # )
+            # shortest_path: PointPath  = matching_combined_paths[0]
 
-            for matching_combined_path in matching_combined_paths:
-                distance: Tuple[float, int] = (
-                    matching_combined_path.walking_distance,
-                    matching_combined_path.teleporting_cost
-                )
-                if distance < shortest_distance:
-                    shortest_distance = distance
-                    shortest_path = matching_combined_path
+            # for matching_combined_path in matching_combined_paths:
+            #     distance: Tuple[float, int] = (
+            #         matching_combined_path.walking_distance,
+            #         matching_combined_path.teleporting_cost
+            #     )
+            #     if distance < shortest_distance:
+            #         shortest_distance = distance
+            #         shortest_path = matching_combined_path
 
-            filtered_paths.append(shortest_path)
+            filtered_paths.append(get_shortest_point_path(matching_combined_paths))
 
     # sanity check
     if len(filtered_paths) != len(start_options) * len(end_options):
@@ -444,6 +514,15 @@ def combine_point_paths(first: PointPath, second: PointPath) -> Optional[PointPa
         teleporting_cost=first.teleporting_cost + second.teleporting_cost,
         points=first.points[:-1] + [merged_portal] + second.points[1:]
     )
+
+
+def unpack_points(points: PointPath) -> List[Point]:
+    output_points: List[Point] = []
+    for point in points.points:
+        output_points.append(point)
+        if point._point_path_source is not None:
+            output_points += unpack_points(point._point_path_source)
+    return output_points
 
 
 ################################################################################
@@ -496,21 +575,33 @@ def main():
         # End
     ]
 
-    a: List[List[PointPath]] = get_shortest_path_through_maplist(segments, M.METRICA_PROVINCE, None)
+    shortest_paths: List[List[PointPath]] = get_shortest_path_through_maplist(segments, M.METRICA_PROVINCE, None)
 
-    b = combine_consecutive_point_path_options(a)
-    if len(b) != 1:
+    shortest_path = combine_consecutive_point_path_options(shortest_paths)
+    if len(shortest_path) != 1:
         print("hmmmmmmmmmmm2")
 
-    true_path = b[0]
+    true_path = unpack_points(shortest_path[0])
 
 
-    for point in true_path.points:
-        print("unproject([{}, {}]),".format(point.x, point.y))
+    previous_point = true_path[0]
+    for point in true_path[1:]:
 
-    # for path in b:
-    #     print(len(path))
-    #     # print("  ", a)
+
+
+        if point.can_waypoint_teleport_to:
+            print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#FF0000'}}).addTo(map)".format(previous_point.end_x, previous_point.end_y, point.x, point.y))
+        else:
+            print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#00FF00'}}).addTo(map)".format(previous_point.end_x, previous_point.end_y, point.x, point.y))
+
+
+
+        if point.x != point.end_x or point.y != point.end_y:
+            print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#A020F080'}}).addTo(map)".format(point.x, point.y, point.end_x, point.end_y))
+
+        previous_point = point
+
+            # "L.polyline(unproject([{}, {}], [{}, {}]), {color: 'red'}).addTo(map)"
 
 
 if __name__ == "__main__":
