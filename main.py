@@ -7,13 +7,14 @@ import math
 import os
 
 import hashlib
+from leaflet_exports import leaflet_export_paths
 from map_info import MapInfo, central_tyria_map_ids
 
 from map_info import M
 from subprocess import Popen, PIPE
 import json
 from itertools import product
-
+from point import Point, PointPath
 
 
 
@@ -29,87 +30,8 @@ class Segment:
 
 
 
-################################################################################
-#
-################################################################################
-@dataclass
-class Point:
-    x: float
-    y: float
-    end_x: float
-    end_y: float
-    identifier: str
-    can_waypoint_teleport_to: bool
-    walking_distance=0
-    teleporting_cost=0
-
-    _point_path_source: Optional["PointPath"] = field(default=None, repr=False,)
-
-    def __init__(
-        self,
-        x: float,
-        y: float,
-        identifier: str,
-        end_x: Optional[float] = None,
-        end_y: Optional[float] = None,
-        can_waypoint_teleport_to: bool = True,
-        walking_distance: float = 0,
-        teleporting_cost: int = 0,
-
-    ):
-        self.x = x
-        self.y = y
-        self.identifier = identifier
-
-        if end_x is None:
-            end_x = x
-        if end_y is None:
-            end_y = y
-
-        self.end_x = end_x
-        self.end_y = end_y
-        self.can_waypoint_teleport_to = can_waypoint_teleport_to
-
-        self.walking_distance = walking_distance
-        self.teleporting_cost = teleporting_cost
-
-    ############################################################################
-    @staticmethod
-    def from_portal_info(portal: PortalInfo) -> 'Point':
-        return Point(
-            x=portal.location[0],
-            y=portal.location[1],
-            identifier=portal.uid,
-            can_waypoint_teleport_to=False,
-        )
-
-    ############################################################################
-    # Transforms the args into an arglist array that can be passed as a part of
-    # the call to the cpp solver program.
-    ############################################################################
-    def to_arglist(self) -> List[str]:
-
-        position: str
-
-        if self.x == self.end_x and self.y == self.end_y:
-            position = "{}:{}".format(self.x, self.y)
-        else:
-            position = "{}:{}:{}:{}".format(self.x, self.y, self.end_x, self.end_y)
-
-        return [
-            position,
-            self.identifier,
-            'T' if self.can_waypoint_teleport_to else 'F',
-            "{}:{}".format(self.walking_distance, self.teleporting_cost)
-        ]
 
 
-
-@dataclass
-class PointPath():
-    walking_distance: float
-    teleporting_cost: int
-    points: List[Point]
 
 
 
@@ -145,7 +67,7 @@ def get_shortest_path(
     end_point: Optional[Point],
     map_id: int,
 ) -> PointPath:
-    cachedir = os.path.join("shortpath_cache2", str(map_id))
+    cachedir = os.path.join("shortpath_cache", str(map_id))
     os.makedirs(cachedir, exist_ok=True)
 
     points_to_hit = sorted(points_to_hit, key=lambda x: x.__repr__())
@@ -634,16 +556,7 @@ def main():
     true_path = unpack_points(shortest_path[0])
 
 
-    previous_point = true_path[0]
-    for point in true_path[1:]:
-        if point.can_waypoint_teleport_to:
-            print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#FF0000'}}).addTo(map)".format(previous_point.end_x, previous_point.end_y, point.x, point.y))
-        else:
-            print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#00FF00'}}).addTo(map)".format(previous_point.end_x, previous_point.end_y, point.x, point.y))
-        if point.x != point.end_x or point.y != point.end_y:
-            print("L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#A020F080'}}).addTo(map)".format(point.x, point.y, point.end_x, point.end_y))
-        previous_point = point
-
+    print(leaflet_export_paths(true_path))
 
     print(len(true_path))
 
