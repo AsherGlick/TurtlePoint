@@ -1,11 +1,16 @@
 from map_info import M
-from typing import Dict, Tuple, List, Optional
+from typing import Dict, Tuple, List
 from dataclasses import dataclass
 from map_info import MapInfo
 from dict_diff import dict_diff
-import json
 
 
+################################################################################
+# Portal
+#
+# A class to store all of the portal's info. It contains an identifier and two
+# coordinates, one for each end of the portal.
+################################################################################
 @dataclass
 class Portal():
 	identifier: str
@@ -17,6 +22,13 @@ class Portal():
 	eastmost_portal_position: Tuple[float, float]
 
 
+	############################################################################
+	# get_point_in_map
+	#
+	# Each portal has two points, usually we only care about one of them when
+	# doing intra-map path searching. This function helps identify which end
+	# of a portal exists in the map in question.
+	############################################################################
 	def get_point_in_map(self, target_map: MapInfo) -> 'PortalInfo':
 		if target_map == self.westmost_map:
 			return PortalInfo(
@@ -31,12 +43,27 @@ class Portal():
 		else:
 			raise ValueError("This portal does not exist in map")
 
+
+################################################################################
+# eod_fix
+#
+# A helper function for adjusting coordinates that were recorded before the End
+# of Dragons expantion came out. When this expantion came out the top left
+# corner of the continent map was shifted up 16384 units, and to the left
+# 32768 units. Meaning that old positions need to have those values added to
+# them in order to match the same location as the units that will be returned
+# from the API today.
+################################################################################
 def eod_fix(x: float, y: float) -> Tuple[float, float]:
 	return (
 		x + 32768,
 		y + 16384,
 	)
 
+# A list of manually assembled portal locations. Due to them being manual it is
+# not guarenteed that they are entirely accurate, however there is much due
+# diligence that gets done within `sanity_check_portals()` to increase our
+# confidence that these are correct.
 raw_portals: List[Portal] = [
 	Portal("001", M.AURIC_BASIN, eod_fix(790, 16219), M.VERDANT_BRINK, eod_fix(877, 16061)),
 	Portal("002", M.AURIC_BASIN, eod_fix(2394, 18790), M.TANGLED_DEPTHS, eod_fix(2915, 18296)),
@@ -109,13 +136,19 @@ raw_portals: List[Portal] = [
 	Portal("068", M.FIELDS_OF_RUIN, eod_fix(29438, 16347), M.BLAZERIDGE_STEPPES, eod_fix(29480, 16146)),
 ]
 
-
+# A helper class that contains the point of one half of a portal.
+# TODO: Should be replaced with Point from point.py
 @dataclass
 class PortalInfo:
 	uid: str
 	location: Tuple[float, float]
 
 
+################################################################################
+# get_portal_data()
+#
+# Returns a dictionary of every map and all the portals within the map.
+################################################################################
 def get_portal_data() -> Dict[int, List[PortalInfo]]:
 	portals: Dict[int, List[PortalInfo]] = {}
 	for portal in raw_portals:
@@ -152,11 +185,19 @@ def get_portals_between(map_a: MapInfo, map_b: MapInfo) -> List[Portal]:
 
 	return connection_list
 
+
+################################################################################
+# def_get_portal_by_id
+#
+# A function to search through the portal data and find a portal that has the
+# identified passed in.
+################################################################################
 def get_portal_by_id(portal_id: str) -> Portal:
 	for portal in raw_portals:
 		if portal.identifier == portal_id:
 			return portal
 	raise ValueError("Invalid portal id", portal_id)
+
 
 ################################################################################
 # within_bounds
@@ -175,6 +216,10 @@ def within_bounds(
 		and point[1] < bounds[1][1]
 	)
 
+
+################################################################################
+############################ PORTAL SANITY CHECKING ############################
+################################################################################
 
 ################################################################################
 # sanity_check_portals
