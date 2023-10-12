@@ -7,20 +7,6 @@ Additionally a path from the end of one map to the start of the next is taken
 into account when calculating the path.
 
 
-Contributing
-================================================================================
-This project was done mostly for fun, after a while it became just about
-solving the problem in a way that *could* work. As a result this code is messy
-inconsistent, and has several random manual nonstandard mechanisms.
-
-PRs altering the algorithm to identify a more optimal path will be accepted.
-PRs for any of the "Possible Advancements" below will be accepted.
-Other cleanup or refactoring PRs will not be accepted at this time. it will be
-about as complicated for us to review a pr reorganizing the code as it will be
-to reorganize the code ourselves. The difficulty of the cleanup is not in the
-code itself but the decisions on how the code should be reorganized.
-
-
 Possible Advancement
 ================================================================================
 
@@ -34,6 +20,7 @@ optimal. This could be a computationally expensive algorithm if done
 incorrectly. All characters start with the 5 waypoints outside each starting
 city so any of them can be the starting point, the ending point can be anywhere.
 
+
 Waypoint Backtracking
 --------------------------------------------------------------------------------
 Characters have every waypoint they have already visited unlocked and can in
@@ -42,6 +29,7 @@ optimzation for this to avoid additional walking distances.
 
 Because all characters have the 5 starting waypoints unlocked this can also be
 used to optimize travel to those locations.
+
 
 Bad Waypoint Denotation
 --------------------------------------------------------------------------------
@@ -54,13 +42,30 @@ visited while they are contested. I don't really know what to do about these
 except skip them, but there may be a mechanism discovered in the future to
 handle these better.
 
+
 Better Walk Routes
 --------------------------------------------------------------------------------
 All of the paths between points are straight lines. They could be terrain
 conforming paths with specific weights.
 
 
-Paths
+Warning / Alternate Path Around Waypoints that dismount
+--------------------------------------------------------------------------------
+* Cuatl Waypoint (big area)
+* Spiral Waypoint (small area)
+* Arca Waypoint (small area)
+* Sorrows Embrace Waypoint (small area)
+* Talus Waypoint (small area)
+* False Lake Waypoint (big area)
+
+
+BUG: Silverwastes map not rendering properly
+--------------------------------------------------------------------------------
+Silverwastes seems to be not rendering properly for an unknown reason. Maybe an
+issue maybe not depending on how widespread it is.
+
+
+Filepaths
 ================================================================================
 * TurtleRoute/ - A CPP Traveling Salesman Problem solver given a fixed start and end point
 * shortpath_cache/ - A cache of all the outputs from `TurtleRoute/`'s executable
