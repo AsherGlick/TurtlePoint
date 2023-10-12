@@ -5,17 +5,28 @@ from typing import List, Tuple, Dict, Any
 from point import Point
 import struct
 
+
+# TODO: use units.continent_to_meters() instead of this constant
 # two feet to meters
 feet_per_meter = 3.28084
 map_to_ingame_scale = 1.64042 # feet_per_meter/2
 
 
+# A helper type to represent an xyz vector as a tuple.
 Vector3 = Tuple[float, float, float]
 
 
-
-# Get a 2d point with a continent scale and convert it to a 3d point with an in-game scale
-def convert_map_to_ingame_point(continent_coordinate, map_api) -> Vector3:
+################################################################################
+# convert_continent_point_to_ingame_point
+#
+# Take a 2d continent point and convert it an reposition it to an ingame 3d
+# point with a default vertical height.
+################################################################################
+def convert_continent_point_to_ingame_point(
+    continent_coordinate: Tuple[float, float],
+    map_api: Any,
+    default_height: float = 29
+) -> Vector3:
     map_x = continent_coordinate[0]
     map_y = continent_coordinate[1]
 
@@ -30,18 +41,24 @@ def convert_map_to_ingame_point(continent_coordinate, map_api) -> Vector3:
     map_offset_y = (map_api["map_rect"][1][1]+map_api["map_rect"][0][1]) / 24 / 2
 
     ingame_x = (map_x - map_origin_x - map_size_x/2 + map_offset_x) / map_to_ingame_scale
-    ingame_y = 29 # TODO there is probably a better way to figure out what the height should be but we are hardcoding it to 29 for now until it is figured out
+    ingame_y = default_height
     ingame_z = (map_y - map_origin_y - map_size_y/2 - map_offset_y) / map_to_ingame_scale
 
     return(ingame_x, ingame_y, -ingame_z)
 
 
+################################################################################
+# search_for_map
+#
+# A helper function to figure out which map a particular point is in
+################################################################################
 def search_for_map(point: Tuple[float, float], map_data: Dict[int, Any]) -> int:
     for map_id, map_value in map_data.items():
         if within_bounds(point, map_value["continent_rect"]):
             return map_id
 
     raise ValueError("Map id not found for point".format(point))
+
 
 ################################################################################
 # within_bounds
@@ -62,7 +79,11 @@ def within_bounds(
 
 
 ################################################################################
-# Add the hearts to tekkit's core tyria map completion markers
+# export_taco
+#
+# Takes all of the points, and output folder, and a list of all the map ids
+# we care about. Then writes data to the output folder to create a taco marker
+# pack from the list of points given.
 ################################################################################
 def export_taco(points: List[Point], folder: str, map_ids: List[int]):
     map_data: Dict = {}
@@ -80,7 +101,10 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]):
         if not within_bounds((point.x, point.y), current_map_bounds):
             raise ValueError("Unexpected map jump")
 
-        current_path.append(convert_map_to_ingame_point((point.x, point.y), map_data[current_map]))
+        current_path.append(convert_continent_point_to_ingame_point(
+            (point.x, point.y),
+            map_data[current_map])
+        )
 
         # This is a split in the paths
         if point.x != point.end_x or point.y != point.end_y:
@@ -90,11 +114,13 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]):
 
             current_map = search_for_map((point.end_x, point.end_y), map_data) 
             current_map_bounds = map_data[current_map]["continent_rect"]
-            current_path = [convert_map_to_ingame_point((point.end_x, point.end_y), map_data[current_map])]
+            current_path = [convert_continent_point_to_ingame_point(
+                (point.end_x, point.end_y),
+                map_data[current_map]
+            )]
 
     paths.append((current_map, current_path))
     print(len(current_path))
-
 
     trail_id = 0
 
@@ -120,6 +146,3 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]):
 
     with open(os.path.join(folder, "TurtlePoint.xml"), "w") as f:
         f.write("".join(xml_output))
-
-
-

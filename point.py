@@ -3,7 +3,14 @@ from typing import Optional, List
 from build_portal_data import PortalInfo
 
 ################################################################################
+# Point
 #
+# A class that contains a point that should be a part of the optimal distance
+# calculation. A point may sometimes be a portal to another location, in which
+# case the point will have an "end" position. A point may sometimes be a
+# placeholder for an entire path, in which case the point will also contain an
+# "end" position, and may possibly contain weights, and the list of points that
+# create it so the points can later be re-added in place.
 ################################################################################
 @dataclass
 class Point:
@@ -47,6 +54,11 @@ class Point:
         self.teleporting_cost = teleporting_cost
 
     ############################################################################
+    # from_portal_info
+    #
+    # A helper function to convert from PortalInfo into a Point.
+    # TODO: When PortalInfo is depricated/removed this function should follow
+    ############################################################################
     @staticmethod
     def from_portal_info(portal: PortalInfo) -> 'Point':
         return Point(
@@ -77,6 +89,12 @@ class Point:
         ]
 
 
+################################################################################
+# PointPath
+#
+# A helper class that contains a list of points, and the weights the sum of
+# those points have.
+################################################################################
 @dataclass
 class PointPath():
     walking_distance: float
