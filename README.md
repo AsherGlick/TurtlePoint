@@ -1,5 +1,8 @@
-This is an attempt to create the most optimal path to unlock all of the central
-tyria waypoints on a Siege Turtle.
+
+Turtle Point is a tool that creates the most optimal path to unlock all of the
+central tyria waypoints on a Siege Turtle.
+
+![Turtle Point Logo](TurtlePoint.png)
 
 
 Each individual map has the optimal path through the map calculated.
