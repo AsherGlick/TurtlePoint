@@ -1,4 +1,4 @@
-from build_waypoint_data import WaypointData, globally_ignore_waypoints
+from build_waypoint_data import WaypointData
 from hashlib import new
 from typing import Tuple, List, Any, Optional, TypeVar, Dict
 from dataclasses import dataclass, field
