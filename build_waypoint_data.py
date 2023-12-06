@@ -5,6 +5,12 @@ from map_info import central_tyria_map_ids
 from typing import List, Any, Set, Dict, TypedDict, Tuple
 
 
+################################################################################
+# WaypointData
+#
+# The datastructure of the waypoint information that is returned from the GW2
+# rest api and stored in the waypoint_cache.json file.
+################################################################################
 class WaypointData(TypedDict):
     name: str
     type: str
@@ -14,23 +20,19 @@ class WaypointData(TypedDict):
     chat_link: str
 
 
-
-
-force_region_id = {
-    "39": 8, # "Mount Maelstrom" is in the "Steamspur Mountains"
-    "53": 8, # "Sparkfly Fen" is in the "Steamspur Mountains"
-}
-
-
 ################################################################################
-# Reads or constructs the waypoint information.
+# get_waypoint_data
 # 
-#
+# Returns data about all waypoints. The data is cached so subsequent calls to
+# the function are faster.
 ################################################################################
-def get_waypoint_data():
+def get_waypoint_data(ignored_waypoints: List[int] = []) -> Dict[str, List[WaypointData]]:
     if os.path.exists("waypoint_cache.json"):
         with open("waypoint_cache.json", "r") as f:
-            return filter_globally_ignored_waypoints(json.load(f))
+            return filter_ignored_waypoints(
+                json.load(f),
+                ignored_waypoint_ids=set(ignored_waypoints),
+            )
 
     waypoints = {}
     for map_id in central_tyria_map_ids:
@@ -39,29 +41,41 @@ def get_waypoint_data():
     with open("waypoint_cache.json", "w") as f:
         json.dump(waypoints, f, indent=4)
 
-    return filter_globally_ignored_waypoints(waypoints)
+    return filter_ignored_waypoints(
+        waypoints,
+        ignored_waypoint_ids=set(ignored_waypoints),
+    )
 
 
-ignored_waypoints: Set[int] = set()
-def globally_ignore_waypoints(waypoint_ids: List[int]) -> None:
-    global ignored_waypoints
-    for waypoint_id in waypoint_ids:
-        print("ignoring", waypoint_id)
-        ignored_waypoints.add(waypoint_id)
-    print(ignored_waypoints)
-
-def filter_globally_ignored_waypoints(waypoints: Dict[str, List[WaypointData]]) -> Dict[str, List[WaypointData]]:
-    print (ignored_waypoints)
+################################################################################
+# filter_out_ignored_waypoints
+#
+# A helper function to filter out waypoints from any map given the waypoint id
+################################################################################
+def filter_ignored_waypoints(waypoints: Dict[str, List[WaypointData]], ignored_waypoint_ids: Set[int]) -> Dict[str, List[WaypointData]]:
     output = {}
     for map_id, map_waypoints in waypoints.items():
         points = []
 
         for point in map_waypoints:
-            if point["id"] not in ignored_waypoints:
+            if point["id"] not in ignored_waypoint_ids:
                 points.append(point)
         output[map_id] = points
     return output
 
+
+# Some descrepencies between the v2/maps api and the v2/continents api exist
+# and need to be forced to be a certian value in order to be interoperable.
+force_map_region_id = {
+    "39": 8, # "Mount Maelstrom" is in the "Steamspur Mountains"
+    "53": 8, # "Sparkfly Fen" is in the "Steamspur Mountains"
+}
+
+
+################################################################################
+# get_map_waypoints
+#
+# Get all of the waypoints for a given map_d using the gw2 rest apis.
 ################################################################################
 def get_map_wapoints(map_id: str):
     map_info = get_api_json(
@@ -72,8 +86,8 @@ def get_map_wapoints(map_id: str):
     continent_id = map_info["continent_id"]
     region_id = map_info["region_id"]
 
-    if map_id in force_region_id:
-        region_id = force_region_id[map_id]
+    if map_id in force_map_region_id:
+        region_id = force_map_region_id[map_id]
 
     waypoints = {}
 

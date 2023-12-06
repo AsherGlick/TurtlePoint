@@ -1,18 +1,8 @@
-from build_waypoint_data import globally_ignore_waypoints
-globally_ignore_waypoints([
-    178, # Arca Waypoint (small area)
-    232, # False Lake Waypoint (big area)
-    309, # Spiral Waypoint (small area)
-    580, # Talus Waypoint (small area)
-    1202, # Cuatl Waypoint (big area)
-    1343, # Sorrow's Embrace Waypoint (small area)
-])
-
-
+from build_waypoint_data import WaypointData, globally_ignore_waypoints
 from hashlib import new
-from typing import Tuple, List, Any, Optional, TypeVar
+from typing import Tuple, List, Any, Optional, TypeVar, Dict
 from dataclasses import dataclass, field
-from build_waypoint_data import get_waypoint_data
+from build_waypoint_data import get_waypoint_data, WaypointData
 from build_portal_data import PortalInfo, get_portal_data, get_portals_between, get_portal_by_id
 import math
 import os
@@ -41,13 +31,7 @@ class Segment:
 
 
 
-
-
-
-
-
 # This file will load all the things that need to be loaded
-waypoint_data = get_waypoint_data()
 portal_data = get_portal_data()
 
 
@@ -174,7 +158,8 @@ def get_shortest_path_through_map(
     previous_map: MapInfo,
     current_map: MapInfo,
     next_map: Optional[MapInfo],
-    additional_points: List[List[Point]]
+    additional_points: List[List[Point]],
+    waypoint_data: Dict[str, List[WaypointData]]
 ) -> List[PointPath]:
 
     waypoints: List[Point] = []
@@ -242,7 +227,8 @@ def get_shortest_path_through_map(
 def get_shortest_path_through_maplist(
     segments: List[Segment],
     origin_map: MapInfo,
-    destination_map: Optional[MapInfo]
+    destination_map: Optional[MapInfo],
+    waypoint_data: Dict[str, List[WaypointData]],
 ) -> List[List[PointPath]]:
     shortest_paths: List[List[PointPath]] = []
 
@@ -258,7 +244,8 @@ def get_shortest_path_through_maplist(
             submap_shortest_paths = get_shortest_path_through_maplist(
                 submap,
                 origin_map=segment.map_itself,
-                destination_map=segment.map_itself
+                destination_map=segment.map_itself,
+                waypoint_data=waypoint_data,
             )
 
             combined_shortest_paths = combine_consecutive_point_path_options(submap_shortest_paths)
@@ -273,6 +260,7 @@ def get_shortest_path_through_maplist(
             segment.map_itself,
             next_map,
             injected_points,
+            waypoint_data,
         )
 
         shortest_paths.append(shortest_path)
@@ -556,7 +544,23 @@ def get_full_waypoint_unlock_path():
         # End
     ]
 
-    shortest_paths: List[List[PointPath]] = get_shortest_path_through_maplist(segments, M.METRICA_PROVINCE, None)
+    waypoint_data = get_waypoint_data(
+        ignored_waypoints=[
+            178, # Arca Waypoint (small area)
+            232, # False Lake Waypoint (big area)
+            309, # Spiral Waypoint (small area)
+            580, # Talus Waypoint (small area)
+            1202, # Cuatl Waypoint (big area)
+            1343, # Sorrow's Embrace Waypoint (small area)
+        ]
+    )
+
+    shortest_paths: List[List[PointPath]] = get_shortest_path_through_maplist(
+        segments,
+        origin_map=M.METRICA_PROVINCE,
+        destination_map=None,
+        waypoint_data=waypoint_data
+    )
 
     shortest_path = combine_consecutive_point_path_options(shortest_paths)
     if len(shortest_path) != 1:
