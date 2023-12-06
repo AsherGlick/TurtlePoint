@@ -1,3 +1,14 @@
+from build_waypoint_data import globally_ignore_waypoints
+globally_ignore_waypoints([
+    178, # Arca Waypoint (small area)
+    232, # False Lake Waypoint (big area)
+    309, # Spiral Waypoint (small area)
+    580, # Talus Waypoint (small area)
+    1202, # Cuatl Waypoint (big area)
+    1343, # Sorrow's Embrace Waypoint (small area)
+])
+
+
 from hashlib import new
 from typing import Tuple, List, Any, Optional, TypeVar
 from dataclasses import dataclass, field

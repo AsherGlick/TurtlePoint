@@ -2,6 +2,18 @@ import json
 from api_request import get_api_json
 import os
 from map_info import central_tyria_map_ids
+from typing import List, Any, Set, Dict, TypedDict, Tuple
+
+
+class WaypointData(TypedDict):
+    name: str
+    type: str
+    floor: int
+    coord: Tuple[float, float]
+    id: int
+    chat_link: str
+
+
 
 
 force_region_id = {
@@ -18,7 +30,7 @@ force_region_id = {
 def get_waypoint_data():
     if os.path.exists("waypoint_cache.json"):
         with open("waypoint_cache.json", "r") as f:
-            return json.load(f)
+            return filter_globally_ignored_waypoints(json.load(f))
 
     waypoints = {}
     for map_id in central_tyria_map_ids:
@@ -27,8 +39,28 @@ def get_waypoint_data():
     with open("waypoint_cache.json", "w") as f:
         json.dump(waypoints, f, indent=4)
 
-    return waypoints
+    return filter_globally_ignored_waypoints(waypoints)
 
+
+ignored_waypoints: Set[int] = set()
+def globally_ignore_waypoints(waypoint_ids: List[int]) -> None:
+    global ignored_waypoints
+    for waypoint_id in waypoint_ids:
+        print("ignoring", waypoint_id)
+        ignored_waypoints.add(waypoint_id)
+    print(ignored_waypoints)
+
+def filter_globally_ignored_waypoints(waypoints: Dict[str, List[WaypointData]]) -> Dict[str, List[WaypointData]]:
+    print (ignored_waypoints)
+    output = {}
+    for map_id, map_waypoints in waypoints.items():
+        points = []
+
+        for point in map_waypoints:
+            if point["id"] not in ignored_waypoints:
+                points.append(point)
+        output[map_id] = points
+    return output
 
 ################################################################################
 def get_map_wapoints(map_id: str):
