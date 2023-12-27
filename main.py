@@ -85,6 +85,7 @@ def get_shortest_path(
 
     data = {}
     if os.path.exists(cachepath):
+        # print("   Using Cached Data - {}".format(cachepath))
         with open(cachepath, 'r') as f:
             data = json.load(f)
     else:
@@ -101,7 +102,6 @@ def get_shortest_path(
     sorted_points: List[Point] = []
     # TODO: Sanity check the start point is the start point
     # TODO: Sanity check the end point is the end point
-
 
     sorted_points = [start_point] + find_point_from_reference(
         point_objects=points_to_hit,
@@ -144,7 +144,8 @@ def find_point_from_reference(point_objects: List[Point], reference: List[Any]) 
 
         if found_point_object is None:
             print("    Did not find a point object for", reference_point)
-            print("    ", point_objects)
+            for point in point_objects:
+                print("       - ", point)
         else:
             out_points.append(found_point_object)
     
@@ -571,11 +572,10 @@ def get_full_waypoint_unlock_path():
     true_path = unpack_points(shortest_path[0])
 
 
-    # print(leaflet_export_paths(true_path))
-
+    export_leaflet(true_path, "leaflet_output")
     export_taco(true_path, "taco_output", central_tyria_map_ids)
 
-    print(len(true_path))
+    print("Number of paths", len(true_path))
 
     print("Cost:", shortest_path[0].teleporting_cost)
     print("Walking:", shortest_path[0].walking_distance)

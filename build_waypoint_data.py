@@ -77,7 +77,7 @@ force_map_region_id = {
 #
 # Get all of the waypoints for a given map_d using the gw2 rest apis.
 ################################################################################
-def get_map_wapoints(map_id: str):
+def get_map_wapoints(map_id: str) -> List[WaypointData]:
     map_info = get_api_json(
         "https://api.guildwars2.com/v2/maps/{map_id}".format(
             map_id=map_id

@@ -1,7 +1,12 @@
-from typing import List, Tuple, Any, Dict
+from typing import List, Any, Dict
 from dataclasses import dataclass
-import json
 
+
+################################################################################
+# Diffline
+#
+# A helper dataclass for storing and printing the lines of a diff.
+################################################################################
 @dataclass
 class Diffline():
     path: List[str]
@@ -15,13 +20,14 @@ class Diffline():
             value=self.content,
         )
 
+
 ################################################################################
 # dict_diff
 #
 # Recursively finds the differences between two dictionaries.
 # Returns a dictionary with keys that are different.
 ################################################################################
-def dict_diff(d1: Dict, d2: Dict) -> List[Diffline]:
+def dict_diff(d1: Dict[Any, Any], d2: Dict[Any, Any]) -> List[Diffline]:
     diff: List[Diffline] = []
     for key, value in d1.items():
         if key not in d2:

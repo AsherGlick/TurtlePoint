@@ -2,6 +2,7 @@ import os
 import hashlib
 import json
 from urllib.request import urlopen
+from typing import Any
 
 ################################################################################
 # get_api_json
@@ -9,7 +10,7 @@ from urllib.request import urlopen
 # Call a JSON api and cache the results in `api_cache/`. Future calls to the 
 # same API will be read from the cache. To expire the cache, delete the file.
 ################################################################################
-def get_api_json(url: str):
+def get_api_json(url: str) -> Any:
     if not os.path.exists("api_cache"):
         os.makedirs("api_cache")
 

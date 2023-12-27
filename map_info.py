@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 
 @dataclass
 class MapInfo():
@@ -124,13 +124,13 @@ for attr in dir(M):
     _map_name_lookup[map_info.n] = map_info
     _map_id_lookup[map_info.i] = map_info
 
-def map_info_from_name(map_name: str):
+def map_info_from_name(map_name: str) -> Optional[MapInfo]:
     return _map_name_lookup.get(map_name, None)
 
-def map_info_from_id(map_id: int):
+def map_info_from_id(map_id: int) -> Optional[MapInfo]:
     return _map_id_lookup.get(map_id, None)
 
-def _build_the_map_list():
+def _build_the_map_list() -> None:
     from api_request import get_api_json
 
     maps = get_api_json("https://api.guildwars2.com/v2/maps?ids=all")
