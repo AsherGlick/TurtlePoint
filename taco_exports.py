@@ -110,7 +110,7 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]):
         if point.x != point.end_x or point.y != point.end_y:
             paths.append((current_map, current_path))
 
-            print("splitting the path", len(current_path))
+            # print("splitting the path", len(current_path))
 
             current_map = search_for_map((point.end_x, point.end_y), map_data) 
             current_map_bounds = map_data[current_map]["continent_rect"]
@@ -120,7 +120,6 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]):
             )]
 
     paths.append((current_map, current_path))
-    print(len(current_path))
 
     trail_id = 0
 

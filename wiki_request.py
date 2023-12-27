@@ -1,5 +1,5 @@
 from typing import TypedDict, List, Dict, Optional
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup  # type:ignore
 from urllib.parse import urljoin
 import hashlib
 import json
@@ -7,7 +7,7 @@ import os
 import re
 import urllib.request
 import urllib.parse
-import wikitextparser as wtp
+import wikitextparser as wtp  # type:ignore
 
 from map_info import map_info_from_name, map_info_from_id, central_tyria_map_ids
 
@@ -73,8 +73,18 @@ link = re.compile(r"^\[\[(?P<link>.*)\]\](?: \((?P<directions>.*)\))?$")
 # link = re.compile(r"\[\[(.*)\]\] \((.*)\)")
 
 
+class MatchGroups(TypedDict):
+    link: str
+    directions: Optional[str]
+
+def regex_match_to_link_matchgroups(match: re.Match[str]) -> MatchGroups:
+    return {
+        "link": match.groupdict()["link"],
+        "directions": match.groupdict()["directions"],
+    }
+
 # Special matches to keep the regex simple
-special_matches = {
+special_matches: Dict[str, Dict[str, MatchGroups]] = {
     "Labyrinthine Cliffs": {
         "Lion's Arch": {
             "link": "Lion's Arch",
@@ -95,12 +105,8 @@ special_matches = {
     }
 }
 
-class MatchGroups(TypedDict):
-    link: str
-    directions: Optional[str]
-
 def get_gw2_map_connections(map_name: str, wikitext: str) -> List[MatchGroups]:
-    connections = []
+    connections: List[MatchGroups] = []
     parsed_wikitext = wtp.parse(wikitext)
     for template in parsed_wikitext.templates:
         if(template.name.strip() == "Location infobox"):
@@ -110,7 +116,7 @@ def get_gw2_map_connections(map_name: str, wikitext: str) -> List[MatchGroups]:
                         if map_name in special_matches and connection in special_matches[map_name]:
                             connections.append(special_matches[map_name][connection])
                         elif match := link.match(connection.strip()):
-                            connections.append(match.groupdict())
+                            connections.append(regex_match_to_link_matchgroups(match))
                         else:
                             print("   No match found", connection)
     return connections
@@ -130,7 +136,7 @@ def get_wikitext_source(page_url: str) -> str:
     elements = soup.findAll("textarea", id="wpTextbox1")
 
     if len(elements) == 1:
-        return elements[0].text
+        return str(elements[0].text)
 
     raise LookupError("Cannot find the wiki page source")
 

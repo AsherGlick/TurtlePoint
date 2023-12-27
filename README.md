@@ -54,12 +54,12 @@ conforming paths with specific weights.
 
 Warning / Alternate Path Around Waypoints that dismount
 --------------------------------------------------------------------------------
-* Cuatl Waypoint (big area)
-* Spiral Waypoint (small area)
-* Arca Waypoint (small area)
-* Sorrows Embrace Waypoint (small area)
-* Talus Waypoint (small area)
-* False Lake Waypoint (big area)
+* Cuatl Waypoint (big area) 1202
+* Spiral Waypoint (small area) 309
+* Arca Waypoint (small area) 178
+* Sorrow's Embrace Waypoint (small area) 1343
+* Talus Waypoint (small area) 580
+* False Lake Waypoint (big area) 232
 
 
 BUG: Silverwastes map not rendering properly
