@@ -8,7 +8,7 @@ import math
 import os
 
 import hashlib
-from leaflet_exports import leaflet_export_paths, leaflet_export_waypoints
+from leaflet_exports import export_leaflet
 from map_info import MapInfo, central_tyria_map_ids
 
 from map_info import M
@@ -572,7 +572,7 @@ def get_full_waypoint_unlock_path():
     true_path = unpack_points(shortest_path[0])
 
 
-    export_leaflet(true_path, "leaflet_output")
+    export_leaflet(true_path, "interactive_map", central_tyria_map_ids)
     export_taco(true_path, "taco_output", central_tyria_map_ids)
 
     print("Number of paths", len(true_path))

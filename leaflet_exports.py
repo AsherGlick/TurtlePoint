@@ -1,6 +1,7 @@
 from typing import List
 from point import Point
 from build_waypoint_data import get_waypoint_data
+import os
 
 
 ################################################################################
@@ -69,6 +70,20 @@ def leaflet_export_waypoints(maps: List[int]) -> str:
     return "\n".join(output_lines)
 
 
+################################################################################
+# export_leaflet
+#
+# Exports the turtlepoint map to a leaflet config so it can be shown on an
+# interactive map.
+################################################################################
+def export_leaflet(points: List[Point], folder: str, map_ids: List[int], include_waypoints: bool=True) -> None:
+    paths: str = leaflet_export_paths(points)
+    waypoints: str = leaflet_export_waypoints(map_ids)
 
-# def leaflet_export_portals() -> str:
-#     pass
+    with open(os.path.join(folder, "coordinates.js"), "w") as f:
+        f.write("\n".join([
+            "function add_coordinates(L, map) {",
+            paths,
+            waypoints if include_waypoints else "",
+            "}",
+        ]))

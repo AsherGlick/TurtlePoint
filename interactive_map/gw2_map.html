@@ -1,0 +1,240 @@
+<html>
+<head>
+    <style>
+        body{padding: 0px; margin: 0px}
+        .leaflet-container { background: #000; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-rc.1/leaflet.css">
+    <script src="./coordinates.js"></script>
+</head>
+<body>
+
+
+<div id="mapdiv" style="width: 100%; height: 100%; background-color: black;"></div>
+
+<script>
+// Including the leaflet js library provides the variable L with various map tools, see "http://leafletjs.com/reference-1.0.0.html" for documentation
+
+// Add leaflet css stylesheet (used for layer controls, marker styles and attribution)
+// $('<link>').appendTo('head').attr({type: 'text/css', rel: 'stylesheet', href: "" });
+
+// This could be called anything, just bear in mind if you rename this then you need to rename anything with the prefix "map."
+var map;
+
+// Helper function to convert GW2 coordinates into Leaflet coordinates
+//  GW2 coordinates: Northwest = [0,0], Southeast = [continent_xmax,continent_ymax];
+//  Leaflet: Northwest = [0,0], Southeast = [-256, 256]
+function unproject(coord) {
+    return map.unproject(coord, map.getMaxZoom() );
+}
+
+// Helper function to print clicked coordinates to the log
+function onMapClick(e) {
+    console.log("You clicked the map at " + map.project(e.latlng,map.getMaxZoom()));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+L.Map.mergeOptions({
+    // @section Mousewheel options
+    // @option smoothWheelZoom: Boolean|String = true
+    // Whether the map can be zoomed by using the mouse wheel. If passed `'center'`,
+    // it will zoom to the center of the view regardless of where the mouse was.
+    smoothWheelZoom: true,
+
+    // @option smoothWheelZoom: number = 1
+    // setting zoom speed
+    smoothSensitivity:1
+
+});
+
+
+L.Map.SmoothWheelZoom = L.Handler.extend({
+
+    addHooks: function () {
+        L.DomEvent.on(this._map._container, 'wheel', this._onWheelScroll, this);
+    },
+
+    removeHooks: function () {
+        L.DomEvent.off(this._map._container, 'wheel', this._onWheelScroll, this);
+    },
+
+    _onWheelScroll: function (e) {
+        if (!this._isWheeling) {
+            this._onWheelStart(e);
+        }
+        this._onWheeling(e);
+    },
+
+    _onWheelStart: function (e) {
+        var map = this._map;
+        this._isWheeling = true;
+        this._wheelMousePosition = map.mouseEventToContainerPoint(e);
+        this._centerPoint = map.getSize()._divideBy(2);
+        this._startLatLng = map.containerPointToLatLng(this._centerPoint);
+        this._wheelStartLatLng = map.containerPointToLatLng(this._wheelMousePosition);
+        this._startZoom = map.getZoom();
+        this._moved = false;
+        this._zooming = true;
+
+        map._stop();
+        if (map._panAnim) map._panAnim.stop();
+
+        this._goalZoom = map.getZoom();
+        this._prevCenter = map.getCenter();
+        this._prevZoom = map.getZoom();
+
+        this._zoomAnimationId = requestAnimationFrame(this._updateWheelZoom.bind(this));
+    },
+
+    _onWheeling: function (e) {
+        var map = this._map;
+
+        this._goalZoom = this._goalZoom + L.DomEvent.getWheelDelta(e) * 0.003 * map.options.smoothSensitivity;
+        if (this._goalZoom < map.getMinZoom() || this._goalZoom > map.getMaxZoom()) {
+            this._goalZoom = map._limitZoom(this._goalZoom);
+        }
+        this._wheelMousePosition = this._map.mouseEventToContainerPoint(e);
+
+        clearTimeout(this._timeoutId);
+        this._timeoutId = setTimeout(this._onWheelEnd.bind(this), 200);
+
+        L.DomEvent.preventDefault(e);
+        L.DomEvent.stopPropagation(e);
+    },
+
+    _onWheelEnd: function (e) {
+        this._isWheeling = false;
+        cancelAnimationFrame(this._zoomAnimationId);
+        this._map._moveEnd(true);
+    },
+
+    _updateWheelZoom: function () {
+        var map = this._map;
+
+        if ((!map.getCenter().equals(this._prevCenter)) || map.getZoom() != this._prevZoom)
+            return;
+
+        this._zoom = map.getZoom() + (this._goalZoom - map.getZoom()) * 0.3;
+        this._zoom = Math.floor(this._zoom * 100) / 100;
+
+        var delta = this._wheelMousePosition.subtract(this._centerPoint);
+        if (delta.x === 0 && delta.y === 0)
+            return;
+
+        if (map.options.smoothWheelZoom === 'center') {
+            this._center = this._startLatLng;
+        } else {
+            this._center = map.unproject(map.project(this._wheelStartLatLng, this._zoom).subtract(delta), this._zoom);
+        }
+
+        if (!this._moved) {
+            map._moveStart(true, false);
+            this._moved = true;
+        }
+
+        map._move(this._center, this._zoom);
+        this._prevCenter = map.getCenter();
+        this._prevZoom = map.getZoom();
+
+        this._zoomAnimationId = requestAnimationFrame(this._updateWheelZoom.bind(this));
+    }
+
+});
+
+L.Map.addInitHook('addHandler', 'smoothWheelZoom', L.Map.SmoothWheelZoom );
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+var MD5 = function(d){var r = M(V(Y(X(d),8*d.length)));return r.toLowerCase()};function M(d){for(var _,m="0123456789ABCDEF",f="",r=0;r<d.length;r++)_=d.charCodeAt(r),f+=m.charAt(_>>>4&15)+m.charAt(15&_);return f}function X(d){for(var _=Array(d.length>>2),m=0;m<_.length;m++)_[m]=0;for(m=0;m<8*d.length;m+=8)_[m>>5]|=(255&d.charCodeAt(m/8))<<m%32;return _}function V(d){for(var _="",m=0;m<32*d.length;m+=8)_+=String.fromCharCode(d[m>>5]>>>m%32&255);return _}function Y(d,_){d[_>>5]|=128<<_%32,d[14+(_+64>>>9<<4)]=_;for(var m=1732584193,f=-271733879,r=-1732584194,i=271733878,n=0;n<d.length;n+=16){var h=m,t=f,g=r,e=i;f=md5_ii(f=md5_ii(f=md5_ii(f=md5_ii(f=md5_hh(f=md5_hh(f=md5_hh(f=md5_hh(f=md5_gg(f=md5_gg(f=md5_gg(f=md5_gg(f=md5_ff(f=md5_ff(f=md5_ff(f=md5_ff(f,r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+0],7,-680876936),f,r,d[n+1],12,-389564586),m,f,d[n+2],17,606105819),i,m,d[n+3],22,-1044525330),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+4],7,-176418897),f,r,d[n+5],12,1200080426),m,f,d[n+6],17,-1473231341),i,m,d[n+7],22,-45705983),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+8],7,1770035416),f,r,d[n+9],12,-1958414417),m,f,d[n+10],17,-42063),i,m,d[n+11],22,-1990404162),r=md5_ff(r,i=md5_ff(i,m=md5_ff(m,f,r,i,d[n+12],7,1804603682),f,r,d[n+13],12,-40341101),m,f,d[n+14],17,-1502002290),i,m,d[n+15],22,1236535329),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+1],5,-165796510),f,r,d[n+6],9,-1069501632),m,f,d[n+11],14,643717713),i,m,d[n+0],20,-373897302),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+5],5,-701558691),f,r,d[n+10],9,38016083),m,f,d[n+15],14,-660478335),i,m,d[n+4],20,-405537848),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+9],5,568446438),f,r,d[n+14],9,-1019803690),m,f,d[n+3],14,-187363961),i,m,d[n+8],20,1163531501),r=md5_gg(r,i=md5_gg(i,m=md5_gg(m,f,r,i,d[n+13],5,-1444681467),f,r,d[n+2],9,-51403784),m,f,d[n+7],14,1735328473),i,m,d[n+12],20,-1926607734),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+5],4,-378558),f,r,d[n+8],11,-2022574463),m,f,d[n+11],16,1839030562),i,m,d[n+14],23,-35309556),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+1],4,-1530992060),f,r,d[n+4],11,1272893353),m,f,d[n+7],16,-155497632),i,m,d[n+10],23,-1094730640),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+13],4,681279174),f,r,d[n+0],11,-358537222),m,f,d[n+3],16,-722521979),i,m,d[n+6],23,76029189),r=md5_hh(r,i=md5_hh(i,m=md5_hh(m,f,r,i,d[n+9],4,-640364487),f,r,d[n+12],11,-421815835),m,f,d[n+15],16,530742520),i,m,d[n+2],23,-995338651),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+0],6,-198630844),f,r,d[n+7],10,1126891415),m,f,d[n+14],15,-1416354905),i,m,d[n+5],21,-57434055),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+12],6,1700485571),f,r,d[n+3],10,-1894986606),m,f,d[n+10],15,-1051523),i,m,d[n+1],21,-2054922799),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+8],6,1873313359),f,r,d[n+15],10,-30611744),m,f,d[n+6],15,-1560198380),i,m,d[n+13],21,1309151649),r=md5_ii(r,i=md5_ii(i,m=md5_ii(m,f,r,i,d[n+4],6,-145523070),f,r,d[n+11],10,-1120210379),m,f,d[n+2],15,718787259),i,m,d[n+9],21,-343485551),m=safe_add(m,h),f=safe_add(f,t),r=safe_add(r,g),i=safe_add(i,e)}return Array(m,f,r,i)}function md5_cmn(d,_,m,f,r,i){return safe_add(bit_rol(safe_add(safe_add(_,d),safe_add(f,i)),r),m)}function md5_ff(d,_,m,f,r,i,n){return md5_cmn(_&m|~_&f,d,_,r,i,n)}function md5_gg(d,_,m,f,r,i,n){return md5_cmn(_&f|m&~f,d,_,r,i,n)}function md5_hh(d,_,m,f,r,i,n){return md5_cmn(_^m^f,d,_,r,i,n)}function md5_ii(d,_,m,f,r,i,n){return md5_cmn(m^(_|~f),d,_,r,i,n)}function safe_add(d,_){var m=(65535&d)+(65535&_);return(d>>16)+(_>>16)+(m>>16)<<16|65535&m}function bit_rol(d,_){return d<<_|d>>>32-_}
+
+
+
+
+
+
+
+
+// Main map function
+function createMap() {
+
+    // Adds the leaflet map within the specified element, in this case a div with id="mapdiv"
+    //  Additionally we set the zoom levels to match the tilelayers, and set the coordinate reference system (simple)
+    //  In this case we're using the maximum zoom from Tyria as 8. It would be 6 for The Mists.
+    map = L.map("mapdiv", {
+        minZoom: 1,
+        maxZoom: 7,
+        crs: L.CRS.Simple,
+
+        scrollWheelZoom: false, // disable original zoom function
+        smoothWheelZoom: true,  // enable smooth zoom 
+        smoothSensitivity: 1,   // zoom speed. default is 1
+
+    });
+
+    // Restrict the area which can be panned to
+    //  In this case we're using the coordinates for the continent of tyria from "https://api.guildwars2.com/v2/continents/1"
+    var continent_dims = [81920,114688];
+    var mapbounds = new L.LatLngBounds(unproject([0,0]), unproject(continent_dims)); // northwest, southeast
+    map.setMaxBounds(mapbounds);
+
+    // Set the default viewport position (in this case the midpoint) and zoom (in this case zoom level 1)
+    map.setView(unproject([(continent_dims[0] / 2),(continent_dims[1] / 2)]), 1);
+
+    // Add a function to return clicked coordinates to the javascript console
+    map.on("click", onMapClick);
+
+    // Add a tile layer
+    map.addLayer(
+        // Use tiles from local storage
+        L.tileLayer(
+            "tiles/1/1/{z}/{x}/{y}.jpg",
+            {
+                maxZoom: 8,
+                noWrap: true,
+                tileSize: 256,
+                bounds: mapbounds
+            }
+        )
+
+        // Use tiles from tiles.gw2.io
+        // L.tileLayer(
+        //     "https://tiles.gw2.io/1/1/{z}/{x}/{y}.jpg",
+        //     {
+        //         minZoom: 0,
+        //         maxZoom: 7,
+        //         continuousWorld: true,
+        //         subdomains: [1,2,3,4],
+        //         bounds: mapbounds
+        //     }
+        // )
+
+        // Use tiles from the gw2 wiki
+        // L.tileLayer(
+        //     "https://wiki.guildwars2.com/images/{single}/{double}/World_map_tile_C1_F1_Z{z}_X{x}_Y{y}.jpg",
+        //     {
+        //         single: (data) => {
+        //             return MD5(`World_map_tile_C1_F1_Z${data.z}_X${data.x}_Y${data.y}.jpg`).substring(0,1);
+        //         },
+        //         double: (data) => {
+        //             return MD5(`World_map_tile_C1_F1_Z${data.z}_X${data.x}_Y${data.y}.jpg`).substring(0,2);
+        //         },
+        //         maxZoom: 8,
+        //         noWrap: true,
+        //         tileSize: 256,
+        //         bounds: mapbounds
+        //     }
+        // )
+    );
+
+    add_coordinates(L, map);
+
+    map.fitBounds(polyline.getBounds());
+
+}
+
+
+createMap();
+</script>
+</body>
+</html>
