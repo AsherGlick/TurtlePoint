@@ -45,7 +45,7 @@ class WeightedDistance {
     int coin_cost;
     double distance;
 
-    // Default constructor, sets all values to -1.
+    // Default constructor, sets all values to -1 to represent an "unitialized" value of "infinity".
     WeightedDistance() {
         this->walking_distance = -1;
         this->coin_cost = -1;
@@ -70,6 +70,12 @@ class WeightedDistance {
 
     // Overloaded addition operator
     WeightedDistance operator+(const WeightedDistance& other) const {
+        if (this->is_uninitalized()){
+            return *this;
+        }
+        else if (other.is_uninitalized()){
+            return other;
+        }
         return WeightedDistance(
             walking_distance + other.walking_distance,
             coin_cost + other.coin_cost,
@@ -79,6 +85,12 @@ class WeightedDistance {
 
     // Overloaded subtraction operator
     WeightedDistance operator-(const WeightedDistance& other) const {
+        if (this->is_uninitalized()){
+            return *this;
+        }
+        else if (other.is_uninitalized()){
+            return other;
+        }
         return WeightedDistance(
             walking_distance - other.walking_distance,
             coin_cost - other.coin_cost,
@@ -88,6 +100,9 @@ class WeightedDistance {
 
     // Overloaded less than operator
     bool operator<(const WeightedDistance& other) const {
+        if (this->is_initalized() && other.is_uninitalized()) {
+            return true;
+        }
         if (walking_distance < other.walking_distance) {
             return true;
         }
@@ -104,6 +119,9 @@ class WeightedDistance {
 
     // Overloaded greater than operator
     bool operator>(const WeightedDistance& other) const {
+        if (this->is_uninitalized() && other.is_initalized()) {
+            return true;
+        }
         if (walking_distance > other.walking_distance) {
             return true;
         }
@@ -116,33 +134,38 @@ class WeightedDistance {
             }
         }
         return false;
-
     }
 
     // Overloaded equality operator
     bool operator==(const WeightedDistance& other) const {
-        return walking_distance == other.walking_distance
+        return (
+            walking_distance == other.walking_distance
             && coin_cost == other.coin_cost
-            && distance == other.distance;
+            && distance == other.distance
+        );
     }
 
     // Overloaded not equals operator
     bool operator!=(const WeightedDistance& other) const {
-        return walking_distance != other.walking_distance
-        || coin_cost != other.coin_cost
-        || distance != other.distance;
+        return (
+            walking_distance != other.walking_distance
+            || coin_cost != other.coin_cost
+            || distance != other.distance
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    // is_negative_one
+    // is_uninitalized
     //
     // A helper function to easily identify if this weighed distance is in an
     // "invalid" or "uninitialized" psuedo state were all the values are set
     // to -1.
-    // TODO: This concept could be more generalized for the class.
     ////////////////////////////////////////////////////////////////////////////
-    bool is_negative_one() {
+    bool is_uninitalized() const {
         return coin_cost == -1 && walking_distance == -1 && distance == -1;
+    }
+    bool is_initalized() const {
+        return !this->is_uninitalized();
     }
 
 };
@@ -282,7 +305,7 @@ WeightedDistance shortest_distance(
     // then we have already calculated the minimum distance required to visit
     // all the remaining nodes in the graph from this node. No need to
     // recalculate the value.
-    if (!shortest_distance_to_end[current_node_index][visited_nodes_bitflag].is_negative_one()) {
+    if (shortest_distance_to_end[current_node_index][visited_nodes_bitflag].is_initalized()) {
         return shortest_distance_to_end[current_node_index][visited_nodes_bitflag];
     }
    
@@ -385,7 +408,7 @@ int main(int argc, char* argv[]) {
     int n = points.size() - 1;
 
     // Build a cache of all the distances between every combination of points.
-    vector<vector<WeightedDistance>> distances(n, vector<WeightedDistance>(n, WeightedDistance(0, 0, 0)));
+    vector<vector<WeightedDistance>> distances(n, vector<WeightedDistance>(n, WeightedDistance()));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             distances[i][j] = points[i].weighted_distance_to(points[j]);
@@ -394,9 +417,12 @@ int main(int argc, char* argv[]) {
 
 
     // Build a cache of all the distances from every node to the final node
-    vector<WeightedDistance> final_node_distances(n, WeightedDistance(0, 0, 0));
-    if (!any_final_node) {
-        for (int i = 0; i < n; i++) {
+    vector<WeightedDistance> final_node_distances(n, WeightedDistance());
+    for (int i = 0; i < n; i++) {
+        if (any_final_node) {
+            final_node_distances[i] = WeightedDistance(0, 0, 0);
+        }
+        else {
             final_node_distances[i] = points[i].weighted_distance_to(points[points.size() - 1]);
         }
     }
@@ -410,7 +436,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Prep the cache 
-    vector<vector<WeightedDistance>> shortest_distance_to_end(n, vector<WeightedDistance>(1 << n, WeightedDistance(-1, -1, -1)));
+    vector<vector<WeightedDistance>> shortest_distance_to_end(n, vector<WeightedDistance>(1 << n, WeightedDistance()));
     vector<vector<int>> optimal_next_node(n, vector<int>(1 << n, UNEXPLORED_LOCATION_INDEX));
 
 
