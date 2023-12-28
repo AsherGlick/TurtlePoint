@@ -18,6 +18,7 @@ class WaypointData(TypedDict):
     coord: Tuple[float, float]
     id: int
     chat_link: str
+    optional: bool
 
 
 ################################################################################
@@ -103,6 +104,7 @@ def get_map_wapoints(map_id: str) -> List[WaypointData]:
 
         for _, poi in floor_info["points_of_interest"].items():
             if poi["type"] == "waypoint":
+                poi["optional"] = False # TODO: instead of hacking "optional" into the TypedDict we should make a dataclass and do real typechecking
                 waypoints[str(poi["id"])] = poi
 
     return list(waypoints.values())

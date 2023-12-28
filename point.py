@@ -20,6 +20,7 @@ class Point:
     end_y: float
     identifier: str
     can_waypoint_teleport_to: bool
+    is_optional: bool
     walking_distance=0
     teleporting_cost=0
 
@@ -33,6 +34,7 @@ class Point:
         end_x: Optional[float] = None,
         end_y: Optional[float] = None,
         can_waypoint_teleport_to: bool = True,
+        is_optional: bool = False,
         walking_distance: float = 0,
         teleporting_cost: int = 0,
 
@@ -40,6 +42,7 @@ class Point:
         self.x = x
         self.y = y
         self.identifier = identifier
+        self.is_optional = is_optional
 
         if end_x is None:
             end_x = x
@@ -81,12 +84,16 @@ class Point:
         else:
             position = "{}:{}:{}:{}".format(self.x, self.y, self.end_x, self.end_y)
 
+        flag = 0
+        if self.can_waypoint_teleport_to:
+            flag |= (1 << 0)
+        if self.is_optional:
+            flag |= (1 << 1)
+
         return [
             position,
             "{}:{}".format(self.walking_distance, self.teleporting_cost),
-            # TODO this is actually a bitflag and we will need to change this logic
-            #      when adding the next flag.
-            '1' if self.can_waypoint_teleport_to else '0',
+            str(flag),
             self.identifier,
         ]
 

@@ -1,17 +1,12 @@
 from build_waypoint_data import WaypointData
-from hashlib import new
-from typing import Tuple, List, Any, Optional, TypeVar, Dict
-from dataclasses import dataclass, field
-from build_waypoint_data import get_waypoint_data, WaypointData
-from build_portal_data import PortalInfo, get_portal_data, get_portals_between, get_portal_by_id
-import math
+from typing import Tuple, List, Any, Optional, Dict
+from build_waypoint_data import WaypointData
+from build_portal_data import get_portal_data, get_portals_between, get_portal_by_id
 import os
 from segment import Segment
 import hashlib
 from leaflet_exports import export_leaflet
 from map_info import MapInfo, central_tyria_map_ids
-
-from map_info import M
 from subprocess import Popen, PIPE
 import json
 from itertools import product
@@ -160,6 +155,7 @@ def get_shortest_path_through_map(
             point["coord"][0],
             point["coord"][1],
             point["name"],
+            is_optional=point["optional"],
         ))
 
 
@@ -353,6 +349,7 @@ def combine_consecutive_point_path_options(
                     matching_combined_paths.append(combined_path)
 
             if len(matching_combined_paths) < 1:
+                print(start_options, end_options)
                 raise ValueError("We dont have a matching in-out group here, there is likely a logic error in the code")
 
             # shortest_distance: Tuple[float, int] = (
@@ -492,25 +489,32 @@ def unpack_points(points: PointPath) -> List[Point]:
 def get_full_waypoint_unlock_path():
 
     # from paths.fullpath import segments, waypoint_data
-    from paths.fullpath_skipbad import segments, waypoint_data
+    # from paths.fullpath_skipbad import segments, waypoint_data
+    from paths.minimal_core_wizard_vault_utility import segments, waypoint_data, origin
 
     shortest_paths: List[List[PointPath]] = get_shortest_path_through_maplist(
         segments,
-        origin_map=M.METRICA_PROVINCE,
+        origin_map=origin,
         destination_map=None,
         waypoint_data=waypoint_data
     )
 
     shortest_path = combine_consecutive_point_path_options(shortest_paths)
-    if len(shortest_path) != 1:
-        print("hmmmmmmmmmmm2")
+
+    if len(shortest_path) > 1:
+        print("Found two shortest paths combinations, picking the first one")
+        # TODO: this warning is just stating what happens later down in the code
+        #       we should instead do the selection of the shortest path here.
+
+    if len(shortest_path) < 1:
+        raise ValueError("We have zero shortest paths")
 
 
 
     true_path = unpack_points(shortest_path[0])
 
 
-    export_leaflet(true_path, "interactive_map", central_tyria_map_ids)
+    export_leaflet(true_path, "interactive_map", waypoint_data)
     export_taco(true_path, "taco_output", central_tyria_map_ids)
 
     print("Number of paths", len(true_path))
