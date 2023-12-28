@@ -11,8 +11,8 @@
 using namespace std;
 
 // TODO we should sanity check that we have actually reached the "end" of a route and not just an unintialized location
-const int UNEXPLORED_LOCATION = -1;
-const int FINAL_LOCATION = -2;
+const int UNEXPLORED_LOCATION_INDEX = -1;
+const int FINAL_LOCATION_INDEX = -2;
 
 ////////////////////////////////////////////////////////////////////////////////
 // split
@@ -289,16 +289,18 @@ WeightedDistance shortest_distance(
     // If the bitflag is full of 1's we have visited every node
     if (visited_nodes_bitflag == (1 << distances.size()) - 1) {
         // Add the distance from this point to the ending point
+        optimal_next_node[current_node_index][visited_nodes_bitflag] = FINAL_LOCATION_INDEX;
         return final_node_distances[current_node_index];
     }
 
 
     WeightedDistance minDist = WeightedDistance(1e9, 1e9, 1e9);
-    int bestNextCity = -1;
+    int bestNextCity = UNEXPLORED_LOCATION_INDEX;
 
     // If we have already completed all the required options then set that as the minDist
     if ((visited_nodes_bitflag | optional_nodes_bitflag) == (1 << distances.size()) - 1) {
         minDist = final_node_distances[current_node_index];
+        bestNextCity = FINAL_LOCATION_INDEX;
     }
 
     // For every node index as i
@@ -409,7 +411,7 @@ int main(int argc, char* argv[]) {
 
     // Prep the cache 
     vector<vector<WeightedDistance>> shortest_distance_to_end(n, vector<WeightedDistance>(1 << n, WeightedDistance(-1, -1, -1)));
-    vector<vector<int>> optimal_next_node(n, vector<int>(1 << n, -1));
+    vector<vector<int>> optimal_next_node(n, vector<int>(1 << n, UNEXPLORED_LOCATION_INDEX));
 
 
     // With a fixed starting point, calculate the shortest distance to all other points
@@ -436,7 +438,13 @@ int main(int argc, char* argv[]) {
     cout  << "        " << points[current_node].to_json() <<  "," << endl;
     while (true) {
         current_node = optimal_next_node[current_node][current_visited];
-        if (current_node == -1) {
+        if (current_node == UNEXPLORED_LOCATION_INDEX) {
+            cout << "===" << endl;
+            cout << "We have a problem: We encountered an unexplored index when tracing the path." << endl;
+            cout << "===" << endl;
+            return 7;
+        }
+        else if (current_node == FINAL_LOCATION_INDEX) {
             break;
         }
         cout << "        " << points[current_node].to_json() << "," <<  endl;
