@@ -4,6 +4,8 @@ from api_request import get_api_json
 from typing import List, Tuple, Dict, Any
 from point import Point
 import struct
+import string
+import random
 
 
 # TODO: use units.continent_to_meters() instead of this constant
@@ -124,7 +126,7 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]):
     xml_output = ['<OverlayData><MarkerCategory name="a" DisplayName="IggyTurtle"/><POIs>']
     for trail_pair in paths:
 
-        trail_filename = "{}.trl".format(trail_id)
+        trail_filename = "{}.trl".format("".join(random.sample(string.ascii_letters, 6)))
         trail_path = os.path.join(folder, trail_filename)
 
         # write the .trl file
