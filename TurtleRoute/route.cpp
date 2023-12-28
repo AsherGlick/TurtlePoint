@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -310,8 +311,28 @@ WeightedDistance shortest_distance(
 
 
 
-// Usage: ./route <x>:<y>[:<ex>:<ey>] <id> <t> <w>:<w> [<x>:<y>[:<ex>:<ey>] <id> <t> <w>:<w>]+
-// Usage: ./route <x>:<y>[:<ex>:<ey>] <id> <t> <w>:<w> V
+// Point Flags
+// Can the player teleport to this point, effects how the weights to this point are calculated.
+const uint32_t CAN_TELEPORT = 0b00000001;
+// Is this point optional. Optional points are allowed to be left out of the final paths.
+const uint32_t IS_OPTIONAL = 0b00000010;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Usage: ./route <startx>:<starty>[:<endx>:<endy>] <walk_weight>:<coin_weight> <flags> <id> [<startx>:<starty>[:<endx>:<endy>] <walk_weight>:<coin_weight> <flags> <id>]+
+// Usage: ./route <startx>:<starty>[:<endx>:<endy>] <walk_weight>:<coin_weight> <flags> <id> V
+//
+// startx      - float   -Start x coordinate
+// starty      - float   -Start y coordinate
+// endx        - float   - end x coordinate
+// endy        - float   - end y coordinate
+// walk_weight - float   - additional walking weight for visiting the node
+// coin_weight - integer - additional coin weight for visiting the node
+// flags       - bitflag - Various different options. See Point Flags
+// id          - string  - an identifier for the node that is returned in the output
+// V           - n/a     - Agument at the end of the command to denote that the
+//                         final point should not be treated as a required endpoint
+////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[]) {
     vector<Point> points;
     bool any_final_node = false;
@@ -319,10 +340,14 @@ int main(int argc, char* argv[]) {
     size_t i;
     for (i = 1; i+3 < argc; i+=4){
         Point point;
-        point.assign_position_from_string(argv[i]);
-        point.id = argv[i+1];
-        point.can_waypoint_teleport_to = argv[i+2][0] == 'T';
-        point.extra_weight = WeightedDistance(argv[i+3]);
+        point.assign_position_from_string(argv[i+0]);
+        point.extra_weight = WeightedDistance(argv[i+1]);
+        uint32_t flags = atoi(argv[i+2]);
+        point.id = argv[i+3];
+
+        // Set Flags
+        point.can_waypoint_teleport_to = flags & CAN_TELEPORT;
+        // point.is_optional = flags & IS_OPTIONAL;
 
         points.push_back(point);
     }

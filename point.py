@@ -83,9 +83,11 @@ class Point:
 
         return [
             position,
+            "{}:{}".format(self.walking_distance, self.teleporting_cost),
+            # TODO this is actually a bitflag and we will need to change this logic
+            #      when adding the next flag.
+            '1' if self.can_waypoint_teleport_to else '0',
             self.identifier,
-            'T' if self.can_waypoint_teleport_to else 'F',
-            "{}:{}".format(self.walking_distance, self.teleporting_cost)
         ]
 
 
