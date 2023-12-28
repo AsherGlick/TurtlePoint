@@ -10,6 +10,9 @@
 
 using namespace std;
 
+// TODO we should sanity check that we have actually reached the "end" of a route and not just an unintialized location
+const int UNEXPLORED_LOCATION = -1;
+const int FINAL_LOCATION = -2;
 
 ////////////////////////////////////////////////////////////////////////////////
 // split
@@ -156,6 +159,7 @@ struct Point {
     float exit_y;
     string id;
     bool can_waypoint_teleport_to;
+    bool is_optional;
     WeightedDistance extra_weight;
 
 
@@ -225,7 +229,7 @@ struct Point {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    // to_json()
+    // to_json
     //
     // Prints out a json string that contains the information we would like to
     // return to the user about this Point.
@@ -248,55 +252,69 @@ struct Point {
 // shortest_distance
 //
 // A traveling salesman solver
+//
+// @param current_node_index
+//  The index of the node we are currently on.
+// @param visited_nodes_bitflag
+//   Bitflag for all of the nodes that have been visited.
+// @param optional_nodes_bitflag
+//   Bitflag for all of the nodes that are optional.
+// @param distances
+//   Precomputed distance between every node and every other node.
+// @param final_node_distances
+//   A vector of weights for every node to the final node.
+// @param shortest_distance_to_end
+//   A cache of current_node_index + visited_nodes_bitflag to shortest distance
+//   to the end. Cache is N*2^N in size.
+// @param optimal_next_node
+//   The optimal node to achieve the shortest distance stored in shortest_distance_to_end.
 ////////////////////////////////////////////////////////////////////////////////
 WeightedDistance shortest_distance(
-    // An integer to represent the index of the current node.
     int current_node_index,
-
-    // Bitflag for if a node has been visited.
-    int visited_nodes_biflag,
-
-    // Precomputed distance between every node and every other node.
+    int visited_nodes_bitflag,
+    const int optional_nodes_bitflag,
     const vector<vector<WeightedDistance>> &distances,
-
-    // A vector of weights from every node to the final node
     const vector<WeightedDistance> &final_node_distances,
-
-    // n x 2^n vector cache of minimum distance
-    // Cache of shortest distances from current_node to the end for a given visited_nodes_bitflag
     vector<vector<WeightedDistance>> &shortest_distance_to_end,
-    // The optimal next node to achieve the shortest distance stored in shortest_distance_to_end
     vector<vector<int>> &optimal_next_node
 ) {
     // If this current_node_index + visited_node_bitflag exists in the cache
     // then we have already calculated the minimum distance required to visit
     // all the remaining nodes in the graph from this node. No need to
     // recalculate the value.
-    if (!shortest_distance_to_end[current_node_index][visited_nodes_biflag].is_negative_one()) {
-        return shortest_distance_to_end[current_node_index][visited_nodes_biflag];
+    if (!shortest_distance_to_end[current_node_index][visited_nodes_bitflag].is_negative_one()) {
+        return shortest_distance_to_end[current_node_index][visited_nodes_bitflag];
     }
    
     // If the bitflag is full of 1's we have visited every node
-    if (visited_nodes_biflag == (1 << distances.size()) - 1) {
+    if (visited_nodes_bitflag == (1 << distances.size()) - 1) {
         // Add the distance from this point to the ending point
         return final_node_distances[current_node_index];
     }
 
+
     WeightedDistance minDist = WeightedDistance(1e9, 1e9, 1e9);
     int bestNextCity = -1;
+
+    // If we have already completed all the required options then set that as the minDist
+    if ((visited_nodes_bitflag | optional_nodes_bitflag) == (1 << distances.size()) - 1) {
+        minDist = final_node_distances[current_node_index];
+    }
+
     // For every node index as i
     for (int i = 0; i < distances.size(); i++) {
         // If we are not currently on the node AND we have not visited it yet.
-        if (i != current_node_index && !(visited_nodes_biflag & (1 << i))) {
-            WeightedDistance candidateDist = distances[current_node_index][i]
-                + shortest_distance(
-                    i,
-                    visited_nodes_biflag | (1 << i),
-                    distances,
-                    final_node_distances,
-                    shortest_distance_to_end,
-                    optimal_next_node
-                );
+        if (i != current_node_index && !(visited_nodes_bitflag & (1 << i))) {
+            WeightedDistance candidateDist = shortest_distance(
+                i,
+                visited_nodes_bitflag | (1 << i),
+                optional_nodes_bitflag,
+                distances,
+                final_node_distances,
+                shortest_distance_to_end,
+                optimal_next_node
+            ) + distances[current_node_index][i];
+
             if (candidateDist < minDist) {
                 minDist = candidateDist;
                 bestNextCity = i;
@@ -304,8 +322,8 @@ WeightedDistance shortest_distance(
         }
     }
 
-    shortest_distance_to_end[current_node_index][visited_nodes_biflag] = minDist;
-    optimal_next_node[current_node_index][visited_nodes_biflag] = bestNextCity;
+    shortest_distance_to_end[current_node_index][visited_nodes_bitflag] = minDist;
+    optimal_next_node[current_node_index][visited_nodes_bitflag] = bestNextCity;
     return minDist;
 }
 
@@ -330,7 +348,7 @@ const uint32_t IS_OPTIONAL = 0b00000010;
 // coin_weight - integer - additional coin weight for visiting the node
 // flags       - bitflag - Various different options. See Point Flags
 // id          - string  - an identifier for the node that is returned in the output
-// V           - n/a     - Agument at the end of the command to denote that the
+// V           - n/a     - Argument at the end of the command to denote that the
 //                         final point should not be treated as a required endpoint
 ////////////////////////////////////////////////////////////////////////////////
 int main(int argc, char* argv[]) {
@@ -347,7 +365,7 @@ int main(int argc, char* argv[]) {
 
         // Set Flags
         point.can_waypoint_teleport_to = flags & CAN_TELEPORT;
-        // point.is_optional = flags & IS_OPTIONAL;
+        point.is_optional = flags & IS_OPTIONAL;
 
         points.push_back(point);
     }
@@ -381,6 +399,13 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Build the bitflag of the optional nodes
+    unsigned int optional_bitflag = 0;
+    for (int i = 0; i < n; i++) {
+        if (points[i].is_optional){
+            optional_bitflag |= (1<<i);
+        }
+    }
 
     // Prep the cache 
     vector<vector<WeightedDistance>> shortest_distance_to_end(n, vector<WeightedDistance>(1 << n, WeightedDistance(-1, -1, -1)));
@@ -391,6 +416,7 @@ int main(int argc, char* argv[]) {
     WeightedDistance shortestPath = shortest_distance(
         0,
         1,
+        optional_bitflag,
         distances,
         final_node_distances,
         shortest_distance_to_end,
