@@ -488,8 +488,8 @@ def unpack_points(points: PointPath) -> List[Point]:
 ################################################################################
 def get_full_waypoint_unlock_path():
 
-    # from paths.fullpath import segments, waypoint_data
-    # from paths.fullpath_skipbad import segments, waypoint_data
+    # from paths.fullpath import segments, waypoint_data, origin
+    # from paths.fullpath_skipbad import segments, waypoint_data, origin
     from paths.minimal_core_wizard_vault_utility import segments, waypoint_data, origin
 
     shortest_paths: List[List[PointPath]] = get_shortest_path_through_maplist(

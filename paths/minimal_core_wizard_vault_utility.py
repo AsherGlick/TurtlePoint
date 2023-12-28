@@ -3,43 +3,52 @@ from map_info import M
 from build_waypoint_data import get_waypoint_data, WaypointData
 from segment import Segment
 
-origin = M.HOELBRAK
-# origin = M.BLAZERIDGE_STEPPES
 
-# The segments
+
+origin = M.RATA_SUM
 segments: List[Segment] =[
     # # Start
-    # Segment(M.METRICA_PROVINCE), # 1
-    # Segment(M.CALEDON_FOREST), # 3
-    # Segment(M.KESSEX_HILLS), # 1
-    # Segment(M.QUEENSDALE), # 2
-    # Segment(M.GENDARRAN_FIELDS), # 1
-    # Segment(M.HARATHI_HINTERLANDS), # 1
-
-    # (Waypoint)
-    Segment(M.WAYFARER_FOOTHILLS), # 2
-    Segment(M.FROSTGORGE_SOUND), # 2
-    Segment(M.FIREHEART_RISE), # 1
-    Segment(M.IRON_MARCHES), # 1
-    Segment(M.BLAZERIDGE_STEPPES), # 3
-    Segment(M.FIELDS_OF_RUIN), # 2
-
-    # # (Waypoint)
-    # Segment(M.PLAINS_OF_ASHFORD), # 1
-    # Segment(M.DIESSA_PLATEAU), # 2
-
-    # # (Mistwarp)
-    # Segment(M.LIONS_ARCH), # 5
-    # Segment(M.SOUTHSUN_COVE), # 1
-    # Segment(M.BLOODTIDE_COAST), # 1
-    # Segment(M.LORNARS_PASS), # None
-    # Segment(M.DREDGEHAUNT_CLIFFS), # 1
-    # Segment(M.TIMBERLINE_FALLS), # 1
-    # Segment(M.MOUNT_MAELSTROM), # 3
-    # Segment(M.STRAITS_OF_DEVASTATION), # None
-    # Segment(M.MALCHORS_LEAP), # 2
-    # # End
+    Segment(M.METRICA_PROVINCE), # 1
+    Segment(M.CALEDON_FOREST), # 3
+    Segment(M.KESSEX_HILLS), # 1
+    Segment(M.QUEENSDALE), # 2
+    Segment(M.GENDARRAN_FIELDS), # 1
+    Segment(M.HARATHI_HINTERLANDS), # 1
 ]
+
+# origin = M.HOELBRAK
+# segments: List[Segment] =[
+#     # (Waypoint)
+#     Segment(M.WAYFARER_FOOTHILLS), # 2
+#     Segment(M.FROSTGORGE_SOUND), # 2
+#     Segment(M.FIREHEART_RISE), # 1
+#     Segment(M.IRON_MARCHES), # 1
+#     Segment(M.BLAZERIDGE_STEPPES), # 3
+#     Segment(M.FIELDS_OF_RUIN), # 2
+# ]
+
+# origin = M.BLACK_CITADEL
+# segments: List[Segment] =[
+#     # # (Waypoint)
+#     Segment(M.PLAINS_OF_ASHFORD), # 1
+#     Segment(M.DIESSA_PLATEAU), # 2
+# ]
+
+# origin = M.GENDARRAN_FIELDS
+# segments: List[Segment] =[
+#     # (Mistwarp)
+#     Segment(M.LIONS_ARCH, [ # 5
+#         [Segment(M.SOUTHSUN_COVE)], # 1
+#     ]),
+#     Segment(M.BLOODTIDE_COAST), # 1
+#     Segment(M.LORNARS_PASS), # None
+#     Segment(M.DREDGEHAUNT_CLIFFS), # 1
+#     Segment(M.TIMBERLINE_FALLS), # 1
+#     Segment(M.MOUNT_MAELSTROM), # 3
+#     Segment(M.STRAITS_OF_DEVASTATION), # None
+#     Segment(M.MALCHORS_LEAP), # 2
+#     # End
+# ]
 
 
 required_points = set([

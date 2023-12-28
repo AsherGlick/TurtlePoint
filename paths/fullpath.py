@@ -3,6 +3,8 @@ from map_info import M
 from build_waypoint_data import get_waypoint_data, WaypointData
 from segment import Segment
 
+origin = M.METRICA_PROVINCE
+
 # The segments
 segments: List[Segment] = [
     # Start
