@@ -1,6 +1,6 @@
 from typing import List, Dict
 from point import Point
-from build_waypoint_data import WaypointData, get_waypoint_data
+from build_waypoint_data import WaypointData
 import os
 
 
@@ -82,14 +82,19 @@ def leaflet_export_waypoints(waypoints: Dict[str, List[WaypointData]]) -> str:
 # Exports the turtlepoint map to a leaflet config so it can be shown on an
 # interactive map.
 ################################################################################
-def export_leaflet(points: List[Point], folder: str, waypoints: Dict[str, List[WaypointData]], include_waypoints: bool=True) -> None:
-    paths: str = leaflet_export_paths(points)
-    waypoints: str = leaflet_export_waypoints(waypoints)
+def export_leaflet(
+    points: List[Point],
+    folder: str,
+    waypoints: Dict[str, List[WaypointData]],
+    include_waypoints: bool = True
+) -> None:
+    leaflet_paths: str = leaflet_export_paths(points)
+    leaflet_waypoints: str = leaflet_export_waypoints(waypoints)
 
     with open(os.path.join(folder, "coordinates.js"), "w") as f:
         f.write("\n".join([
             "function add_coordinates(L, map, optionalIcon, primaryIcon) {",
-            paths,
-            waypoints if include_waypoints else "",
+            leaflet_paths,
+            leaflet_waypoints if include_waypoints else "",
             "}",
         ]))

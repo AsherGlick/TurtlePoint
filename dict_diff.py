@@ -41,10 +41,8 @@ def dict_diff(d1: Dict[Any, Any], d2: Dict[Any, Any]) -> List[Diffline]:
             diff.append(Diffline(path=[key.__repr__()], addition=False, content=value))
             diff.append(Diffline(path=[key.__repr__()], addition=True, content=d2[key]))
 
-
     for key, value in d2.items():
         if key not in d1:
             diff.append(Diffline(path=[key.__repr__()], addition=True, content=value))
 
     return sorted(diff, key=lambda x: ".".join(x.path) + str(x.addition))
-

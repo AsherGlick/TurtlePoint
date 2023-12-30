@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Tuple, Dict, Optional
 
+
 @dataclass
 class MapInfo():
     # The id of the map.
@@ -10,7 +11,8 @@ class MapInfo():
     # The continent coordinate bounderies of the map
     bounding_box: Tuple[Tuple[float, float], Tuple[float, float]]
 
-# MAP LIST
+
+# Map List
 class M():
     AMNYTAS = MapInfo(i=1517, n="Amnytas", bounding_box=((22614, 18938), (25558, 21882)))
     ARBORSTONE = MapInfo(i=1428, n="Arborstone", bounding_box=((29185, 100890), (33025, 103450)))
@@ -98,19 +100,17 @@ class M():
     WINDSWEPT_HAVEN = MapInfo(i=1215, n="Windswept Haven", bounding_box=((64016, 51072), (65296, 52352)))
 
 
-
-central_tyria_map_ids: List[int]= [
-    M.TIMBERLINE_FALLS.i,   M.CALEDON_FOREST.i,   M.LORNARS_PASS.i,   M.DRY_TOP.i,
-    M.FROSTGORGE_SOUND.i,   M.FIELDS_OF_RUIN.i,   M.CURSED_SHORE.i,   M.RATA_SUM.i,
-    M.METRICA_PROVINCE.i,   M.FIREHEART_RISE.i,   M.SPARKFLY_FEN.i,   M.HOELBRAK.i,
-    M.BRISBAN_WILDLANDS.i,  M.DIVINITYS_REACH.i,  M.MALCHORS_LEAP.i,  M.THE_GROVE.i,
-    M.PLAINS_OF_ASHFORD.i,  M.MOUNT_MAELSTROM.i,  M.BLACK_CITADEL.i,  M.LIONS_ARCH.i,
-    M.BLAZERIDGE_STEPPES.i, M.BLOODTIDE_COAST.i,  M.SOUTHSUN_COVE.i,  M.QUEENSDALE.i,
-    M.DREDGEHAUNT_CLIFFS.i, M.GENDARRAN_FIELDS.i, M.SNOWDEN_DRIFTS.i, M.KESSEX_HILLS.i,
-    M.WAYFARER_FOOTHILLS.i, M.THE_SILVERWASTES.i, M.DIESSA_PLATEAU.i, M.IRON_MARCHES.i,
-    M.HARATHI_HINTERLANDS.i, M.STRAITS_OF_DEVASTATION.i
+central_tyria_map_ids: List[int] = [
+    M.TIMBERLINE_FALLS.i,   M.CALEDON_FOREST.i,   M.LORNARS_PASS.i,   M.DRY_TOP.i,  # noqa: E241
+    M.FROSTGORGE_SOUND.i,   M.FIELDS_OF_RUIN.i,   M.CURSED_SHORE.i,   M.RATA_SUM.i,  # noqa: E241
+    M.METRICA_PROVINCE.i,   M.FIREHEART_RISE.i,   M.SPARKFLY_FEN.i,   M.HOELBRAK.i,  # noqa: E241
+    M.BRISBAN_WILDLANDS.i,  M.DIVINITYS_REACH.i,  M.MALCHORS_LEAP.i,  M.THE_GROVE.i,  # noqa: E241
+    M.PLAINS_OF_ASHFORD.i,  M.MOUNT_MAELSTROM.i,  M.BLACK_CITADEL.i,  M.LIONS_ARCH.i,  # noqa: E241
+    M.BLAZERIDGE_STEPPES.i, M.BLOODTIDE_COAST.i,  M.SOUTHSUN_COVE.i,  M.QUEENSDALE.i,  # noqa: E241
+    M.DREDGEHAUNT_CLIFFS.i, M.GENDARRAN_FIELDS.i, M.SNOWDEN_DRIFTS.i, M.KESSEX_HILLS.i,  # noqa: E241
+    M.WAYFARER_FOOTHILLS.i, M.THE_SILVERWASTES.i, M.DIESSA_PLATEAU.i, M.IRON_MARCHES.i,  # noqa: E241
+    M.HARATHI_HINTERLANDS.i, M.STRAITS_OF_DEVASTATION.i  # noqa: E241
 ]
-
 
 
 _map_name_lookup: Dict[str, MapInfo] = {}
@@ -124,11 +124,14 @@ for attr in dir(M):
     _map_name_lookup[map_info.n] = map_info
     _map_id_lookup[map_info.i] = map_info
 
+
 def map_info_from_name(map_name: str) -> Optional[MapInfo]:
     return _map_name_lookup.get(map_name, None)
 
+
 def map_info_from_id(map_id: int) -> Optional[MapInfo]:
     return _map_id_lookup.get(map_id, None)
+
 
 def _build_the_map_list() -> None:
     from api_request import get_api_json
@@ -144,9 +147,9 @@ def _build_the_map_list() -> None:
             continue
 
         if map_data["id"] in [
-            1095, # Dragons Stand Heart of Thorns
-            1042, # Duplicate Verdant Bringk
-            1316, # Mists Rifts, similar enough to instanced content probably
+            1095,  # Dragons Stand Heart of Thorns
+            1042,  # Duplicate Verdant Bringk
+            1316,  # Mists Rifts, similar enough to instanced content probably
         ]:
             continue
 
@@ -163,6 +166,7 @@ def _build_the_map_list() -> None:
             x2=map_data["continent_rect"][1][0],
             y2=map_data["continent_rect"][1][1],
         ))
+
 
 if __name__ == "__main__":
     _build_the_map_list()

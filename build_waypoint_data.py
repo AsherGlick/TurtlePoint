@@ -2,7 +2,7 @@ import json
 from api_request import get_api_json
 import os
 from map_info import central_tyria_map_ids
-from typing import List, Any, Set, Dict, TypedDict, Tuple
+from typing import List, Set, Dict, TypedDict, Tuple
 
 
 ################################################################################
@@ -23,7 +23,7 @@ class WaypointData(TypedDict):
 
 ################################################################################
 # get_waypoint_data
-# 
+#
 # Returns data about all waypoints. The data is cached so subsequent calls to
 # the function are faster.
 ################################################################################
@@ -68,8 +68,8 @@ def filter_ignored_waypoints(waypoints: Dict[str, List[WaypointData]], ignored_w
 # Some descrepencies between the v2/maps api and the v2/continents api exist
 # and need to be forced to be a certian value in order to be interoperable.
 force_map_region_id = {
-    "39": 8, # "Mount Maelstrom" is in the "Steamspur Mountains"
-    "53": 8, # "Sparkfly Fen" is in the "Steamspur Mountains"
+    "39": 8,  # "Mount Maelstrom" is in the "Steamspur Mountains"
+    "53": 8,  # "Sparkfly Fen" is in the "Steamspur Mountains"
 }
 
 
@@ -104,7 +104,7 @@ def get_map_wapoints(map_id: str) -> List[WaypointData]:
 
         for _, poi in floor_info["points_of_interest"].items():
             if poi["type"] == "waypoint":
-                poi["optional"] = False # TODO: instead of hacking "optional" into the TypedDict we should make a dataclass and do real typechecking
+                poi["optional"] = False  # TODO: instead of hacking "optional" into the TypedDict we should make a dataclass and do real typechecking
                 waypoints[str(poi["id"])] = poi
 
     return list(waypoints.values())

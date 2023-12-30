@@ -1,6 +1,6 @@
 from typing import List
 from map_info import M
-from build_waypoint_data import get_waypoint_data, WaypointData
+from build_waypoint_data import get_waypoint_data
 from segment import Segment
 
 origin = M.METRICA_PROVINCE
@@ -53,11 +53,11 @@ segments: List[Segment] = [
 
 waypoint_data = get_waypoint_data(
     ignored_waypoints=[
-        178, # Arca Waypoint (small area)
-        232, # False Lake Waypoint (big area)
-        309, # Spiral Waypoint (small area)
-        580, # Talus Waypoint (small area)
-        1202, # Cuatl Waypoint (big area)
-        1343, # Sorrow's Embrace Waypoint (small area)
+        178,  # Arca Waypoint (small area)
+        232,  # False Lake Waypoint (big area)
+        309,  # Spiral Waypoint (small area)
+        580,  # Talus Waypoint (small area)
+        1202,  # Cuatl Waypoint (big area)
+        1343,  # Sorrow's Embrace Waypoint (small area)
     ]
 )

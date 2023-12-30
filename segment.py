@@ -2,8 +2,9 @@ from dataclasses import dataclass, field
 from typing import List
 from map_info import MapInfo
 
+
 ################################################################################
-#
+# Segment
 ################################################################################
 @dataclass
 class Segment:

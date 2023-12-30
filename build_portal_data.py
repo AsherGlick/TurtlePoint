@@ -209,7 +209,7 @@ def get_portal_by_id(portal_id: str) -> Portal:
 def within_bounds(
     point: Tuple[float, float],
     bounds: Tuple[Tuple[float, float], Tuple[float, float]]
-):
+) -> bool:
     return (
         bounds[0][0] < point[0]
         and point[0] < bounds[1][0]
@@ -231,7 +231,7 @@ def within_bounds(
 # the location and existance of portals given the information we have access
 # to query.
 ################################################################################
-def sanity_check_portals():
+def sanity_check_portals() -> None:
     sanity_check_eastmost_westmost_portal_location()
     sanity_check_portals_within_map_bounding_box()
     sanity_check_portal_quantity_and_destination_map_from_connectsto_wiki_data()
@@ -243,7 +243,7 @@ def sanity_check_portals():
 # A simple check to make sure the westmost portal is actually the most west of
 # the two portals, and the eastmost is the most east.
 ################################################################################
-def sanity_check_eastmost_westmost_portal_location():
+def sanity_check_eastmost_westmost_portal_location() -> None:
     for portal in raw_portals:
         if portal.westmost_portal_position[0] > portal.eastmost_portal_position[0]:
             print("Flipped Portals in id", portal.identifier)
@@ -255,7 +255,7 @@ def sanity_check_eastmost_westmost_portal_location():
 # Sanity checks that for each end of a portal, that portal's location is
 # actually in the map it says it is a part of
 ################################################################################
-def sanity_check_portals_within_map_bounding_box():
+def sanity_check_portals_within_map_bounding_box() -> None:
     for portal in raw_portals:
         if not within_bounds(portal.westmost_portal_position, portal.westmost_map.bounding_box):
             print("Westmost portal in id {} is outside of map bounds. {}".format(portal.identifier, portal.westmost_map.n))
@@ -274,12 +274,12 @@ def sanity_check_portals_within_map_bounding_box():
 # that the data we have for which maps connect to what other maps, and how many
 # times, lines up with the data on the wiki.
 ################################################################################
-def sanity_check_portal_quantity_and_destination_map_from_connectsto_wiki_data():
+def sanity_check_portal_quantity_and_destination_map_from_connectsto_wiki_data() -> None:
     from wiki_request import get_portal_counts
     from map_info import central_tyria_map_ids
     wiki_portal_counts = get_portal_counts()
 
-    local_portal_counts = {}
+    local_portal_counts: Dict[str, Dict[str, int]] = {}
 
     for portal in raw_portals:
         # skip any portals leading out of central tyria

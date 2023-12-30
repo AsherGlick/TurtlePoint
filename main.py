@@ -1,6 +1,5 @@
 from build_waypoint_data import WaypointData
-from typing import Tuple, List, Any, Optional, Dict
-from build_waypoint_data import WaypointData
+from typing import Tuple, List, Any, Optional, Dict, Generator
 from build_portal_data import get_portal_data, get_portals_between, get_portal_by_id
 import os
 from segment import Segment
@@ -14,9 +13,6 @@ from point import Point, PointPath
 from taco_exports import export_taco
 
 
-
-
-
 # This file will load all the things that need to be loaded
 portal_data = get_portal_data()
 
@@ -25,18 +21,17 @@ portal_data = get_portal_data()
 # every_combination_between_zero_and
 #
 # Creates every combination of numbers between 0 and value exclusive. Does not
-# repeat reversed combinations. 
+# repeat reversed combinations.
 ################################################################################
-def every_combination_between_zero_and(value: int):
-    first = 0
-    second = 0
+def every_combination_between_zero_and(value: int) -> Generator[Tuple[int, int], None, None]:
+    first: int = 0
+    second: int = 0
     while first < value:
         yield (first, second)
         second += 1
         if second == value:
             first += 1
             second = first
-
 
 
 ################################################################################
@@ -62,12 +57,10 @@ def get_shortest_path(
     else:
         args += ['v']
 
-
     argument_hash = hashlib.new('sha256')
     argument_hash.update(str(args).encode())
     # print(argument_hash.hexdigest())
     cachepath = os.path.join(cachedir, argument_hash.hexdigest() + ".json")
-
 
     data = {}
     if os.path.exists(cachepath):
@@ -79,11 +72,17 @@ def get_shortest_path(
         output, err = process.communicate()
         exit_code = process.wait()
 
+        if exit_code != 0:
+            pass  # TODO: Handle a nonzero exit code
+
+        if len(err) != 0:
+            pass  # TODO: Handle nonempty stderr
+
         print(output)
         data = json.loads(output)
 
         with open(cachepath, 'wb') as f:
-            f.write(output) 
+            f.write(output)
 
     sorted_points: List[Point] = []
     # TODO: Sanity check the start point is the start point
@@ -127,14 +126,13 @@ def find_point_from_reference(point_objects: List[Point], reference: List[Any]) 
                 else:
                     print("Duplicate Point Objects found", found_point_object, point_object)
 
-
         if found_point_object is None:
             print("    Did not find a point object for", reference_point)
             for point in point_objects:
                 print("       - ", point)
         else:
             out_points.append(found_point_object)
-    
+
     return out_points
 
 
@@ -157,7 +155,6 @@ def get_shortest_path_through_map(
             point["name"],
             is_optional=point["optional"],
         ))
-
 
     combinations = [list(comb) for comb in product(*additional_points)]
 
@@ -204,9 +201,7 @@ def get_shortest_path_through_map(
             )
             out_points.append(point_path)
 
-
     return out_points
-
 
 
 ################################################################################
@@ -223,8 +218,8 @@ def get_shortest_path_through_maplist(
     previous_map = origin_map
     for i, segment in enumerate(segments):
         next_map: Optional[MapInfo] = destination_map
-        if len(segments) > i+1:
-            next_map = segments[i+1].map_itself
+        if len(segments) > i + 1:
+            next_map = segments[i + 1].map_itself
 
         print(previous_map.n, "->", segment.map_itself.n, "->", next_map.n if next_map is not None else "DONE")
         injected_points: List[List[Point]] = []
@@ -241,7 +236,6 @@ def get_shortest_path_through_maplist(
                 combined_shortest_paths,
                 segment.map_itself
             ))
-
 
         shortest_path = get_shortest_path_through_map(
             previous_map,
@@ -267,7 +261,6 @@ def point_paths_to_in_map_points(
     ]
 
 
-
 ################################################################################
 # get_shortest_point_path
 #
@@ -279,7 +272,7 @@ def get_shortest_point_path(point_paths: List[PointPath]) -> PointPath:
         point_paths[0].walking_distance,
         point_paths[0].teleporting_cost,
     )
-    shortest_path: PointPath  = point_paths[0]
+    shortest_path: PointPath = point_paths[0]
 
     for matching_combined_path in point_paths:
         distance: Tuple[float, int] = (
@@ -308,7 +301,6 @@ def combine_consecutive_point_path_options(
         print("we got a null suffix path... bailing out (and cascading the problem up)")
         return []
 
-
     # Combine all possible combinations of paths
     combined_paths: List[PointPath] = []
     for prefix_path in prefix_paths:
@@ -319,8 +311,6 @@ def combine_consecutive_point_path_options(
 
             # Add the successfully combined path
             combined_paths.append(combined_path)
-
-
 
     # Remove duplicate paths by taking the shorter one
     # there should be exactly len(start_options) * len(end_options) elements returned
@@ -334,7 +324,6 @@ def combine_consecutive_point_path_options(
     end_options: List[Point] = [
         x.points[-1] for x in consecutive_point_path_options[-1]
     ]
-
 
     filtered_paths: List[PointPath] = []
 
@@ -417,8 +406,6 @@ def pack_point_path_to_point(
     point_path: PointPath,
     origin_map: MapInfo,
 ) -> Point:
-
-
     entrance_portal = get_portal_by_id(point_path.points[0].identifier)
     exit_portal = get_portal_by_id(point_path.points[-1].identifier)
 
@@ -432,7 +419,7 @@ def pack_point_path_to_point(
         end_y=exit_point.location[1],
         walking_distance=point_path.walking_distance,
         teleporting_cost=point_path.teleporting_cost,
-        identifier="PointPathSummary", # TODO add some more details to this with what maps it connects from->to etc or just a random number maybe
+        identifier="PointPathSummary",  # TODO add some more details to this with what maps it connects from->to etc or just a random number maybe
 
         # this happens to be false for all the points we care about, but...
         # it might not be universally true. A point path really is just the start node of another ... hmmmmmmmmmmm wait
@@ -440,7 +427,6 @@ def pack_point_path_to_point(
         # we actually want to be setting the start x/y and end x/y points to be the portals on the OTHER map not the one the point path is in...
         can_waypoint_teleport_to=False,
     )
-
 
     point._point_path_source = point_path
 
@@ -486,8 +472,7 @@ def unpack_points(points: PointPath) -> List[Point]:
 ################################################################################
 #
 ################################################################################
-def get_full_waypoint_unlock_path():
-
+def get_full_waypoint_unlock_path() -> None:
     # from paths.fullpath import segments, waypoint_data, origin
     # from paths.fullpath_skipbad import segments, waypoint_data, origin
     from paths.minimal_core_wizard_vault_utility import segments, waypoint_data, origin
@@ -509,10 +494,7 @@ def get_full_waypoint_unlock_path():
     if len(shortest_path) < 1:
         raise ValueError("We have zero shortest paths")
 
-
-
     true_path = unpack_points(shortest_path[0])
-
 
     export_leaflet(true_path, "interactive_map", waypoint_data)
     export_taco(true_path, "taco_output", central_tyria_map_ids)
@@ -523,8 +505,7 @@ def get_full_waypoint_unlock_path():
     print("Walking:", shortest_path[0].walking_distance)
 
 
-
-def main():
+def main() -> None:
     get_full_waypoint_unlock_path()
 
 

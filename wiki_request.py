@@ -1,16 +1,14 @@
-from typing import TypedDict, List, Dict, Optional
 from bs4 import BeautifulSoup  # type:ignore
+from map_info import map_info_from_name, map_info_from_id, central_tyria_map_ids
+from typing import TypedDict, List, Dict, Optional
 from urllib.parse import urljoin
 import hashlib
 import json
 import os
 import re
-import urllib.request
 import urllib.parse
+import urllib.request
 import wikitextparser as wtp  # type:ignore
-
-from map_info import map_info_from_name, map_info_from_id, central_tyria_map_ids
-
 
 
 def get_portal_counts() -> Dict[str, Dict[str, int]]:
@@ -32,8 +30,6 @@ def get_portal_counts() -> Dict[str, Dict[str, int]]:
                 )
             )
         )
-        # print(map_info.n)
-        
 
         for connection in connections:
             # Chantry of Secrets might not need to be on this list, but because this is all for the
@@ -57,16 +53,11 @@ def get_portal_counts() -> Dict[str, Dict[str, int]]:
                 count = len(connection["directions"].split(","))
 
             if connection_info.n not in portal_count[map_info.n]:
-                portal_count[map_info.n][connection_info.n] = 0                
+                portal_count[map_info.n][connection_info.n] = 0
 
             portal_count[map_info.n][connection_info.n] += count
 
-
     return portal_count
-
-
-
-
 
 
 link = re.compile(r"^\[\[(?P<link>.*)\]\](?: \((?P<directions>.*)\))?$")
@@ -77,11 +68,13 @@ class MatchGroups(TypedDict):
     link: str
     directions: Optional[str]
 
+
 def regex_match_to_link_matchgroups(match: re.Match[str]) -> MatchGroups:
     return {
         "link": match.groupdict()["link"],
         "directions": match.groupdict()["directions"],
     }
+
 
 # Special matches to keep the regex simple
 special_matches: Dict[str, Dict[str, MatchGroups]] = {
@@ -105,14 +98,20 @@ special_matches: Dict[str, Dict[str, MatchGroups]] = {
     }
 }
 
+
+################################################################################
+# get_gw2_map_connections
+#
+# Extracts which maps connect to which other maps from data found on the gw2 wiki
+################################################################################
 def get_gw2_map_connections(map_name: str, wikitext: str) -> List[MatchGroups]:
     connections: List[MatchGroups] = []
     parsed_wikitext = wtp.parse(wikitext)
     for template in parsed_wikitext.templates:
-        if(template.name.strip() == "Location infobox"):
+        if template.name.strip() == "Location infobox":
             for argument in template.arguments:
                 if argument.name.strip() == "connections":
-                    for connection in argument.value.strip().replace('<br />','<br>').replace('<br \\>','<br>').split("<br>"):
+                    for connection in argument.value.strip().replace('<br />', '<br>').replace('<br \\>', '<br>').split("<br>"):
                         if map_name in special_matches and connection in special_matches[map_name]:
                             connections.append(special_matches[map_name][connection])
                         elif match := link.match(connection.strip()):
@@ -186,14 +185,16 @@ def get_page(page_url: str) -> str:
     haslib_sha.update(page_url.encode())
     sha = haslib_sha.hexdigest()
 
-    cached_page_location = os.path.join("wiki_cache", sha+".json")
+    cached_page_location = os.path.join("wiki_cache", sha + ".json")
     if os.path.exists(cached_page_location):
         with open(cached_page_location) as f:
-            return json.load(f)["html"]
+            data = json.load(f)
+            if isinstance(data["html"], str):
+                return data["html"]
+            raise ValueError("Expected 'html' field to be a string not a {}".format(type(data["html"])))
 
-    headers = { 'User-Agent' : 'Mozilla/5.0' }
-    html = urllib.request.urlopen(urllib.request.Request(page_url, None, headers)).read().decode("utf-8")
-
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    html: str = urllib.request.urlopen(urllib.request.Request(page_url, None, headers)).read().decode("utf-8")
 
     with open(cached_page_location, 'w') as f:
         json.dump({"url": page_url, "html": html}, f)

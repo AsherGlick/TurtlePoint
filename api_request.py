@@ -4,10 +4,11 @@ import json
 from urllib.request import urlopen
 from typing import Any
 
+
 ################################################################################
 # get_api_json
 #
-# Call a JSON api and cache the results in `api_cache/`. Future calls to the 
+# Call a JSON api and cache the results in `api_cache/`. Future calls to the
 # same API will be read from the cache. To expire the cache, delete the file.
 ################################################################################
 def get_api_json(url: str) -> Any:

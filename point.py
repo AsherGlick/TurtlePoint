@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from typing import Optional, List
 from build_portal_data import PortalInfo
 
+
 ################################################################################
 # Point
 #
@@ -21,8 +22,8 @@ class Point:
     identifier: str
     can_waypoint_teleport_to: bool
     is_optional: bool
-    walking_distance=0
-    teleporting_cost=0
+    walking_distance: float = 0
+    teleporting_cost: int = 0
 
     _point_path_source: Optional["PointPath"] = field(default=None, repr=False,)
 
