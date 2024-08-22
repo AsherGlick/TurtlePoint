@@ -3,6 +3,11 @@ from point import Point
 from build_waypoint_data import WaypointData
 import os
 
+LINE_WIDTH = 10
+REGULAR_LINE_COLOR = "#FF0000"
+WALKING_PATH_LINE_COLOR = "#00FF00"
+PORTAL_PATH_LINE_COLOR = "#A020F080"
+POLYLINE_FORMAT_STRING = "L.polyline([unproject([{startx}, {starty}]), unproject([{endx}, {endy}])], {{color: '{color}', weight: {weight}}}).addTo(map)"
 
 ################################################################################
 # leaflet_export_paths
@@ -18,29 +23,35 @@ def leaflet_export_paths(path: List[Point]) -> str:
     for point in path[1:]:
         if point.can_waypoint_teleport_to:
             output_lines.append(
-                "L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#FF0000'}}).addTo(map)".format(
-                    previous_point.end_x,
-                    previous_point.end_y,
-                    point.x,
-                    point.y
+                POLYLINE_FORMAT_STRING.format(
+                    startx=previous_point.end_x,
+                    starty=previous_point.end_y,
+                    endx=point.x,
+                    endy=point.y,
+                    color=REGULAR_LINE_COLOR,
+                    weight=LINE_WIDTH,
                 )
             )
         else:
             output_lines.append(
-                "L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#00FF00'}}).addTo(map)".format(
-                    previous_point.end_x,
-                    previous_point.end_y,
-                    point.x,
-                    point.y
+                POLYLINE_FORMAT_STRING.format(
+                    startx=previous_point.end_x,
+                    starty=previous_point.end_y,
+                    endx=point.x,
+                    endy=point.y,
+                    color=PORTAL_PATH_LINE_COLOR,
+                    weight=LINE_WIDTH,
                 )
             )
         if point.x != point.end_x or point.y != point.end_y:
             output_lines.append(
-                "L.polyline([unproject([{}, {}]), unproject([{}, {}])], {{color: '#A020F080'}}).addTo(map)".format(
-                    point.x,
-                    point.y,
-                    point.end_x,
-                    point.end_y
+                POLYLINE_FORMAT_STRING.format(
+                    startx=point.x,
+                    starty=point.y,
+                    endx=point.end_x,
+                    endy=point.end_y,
+                    color=PORTAL_PATH_LINE_COLOR,
+                    weight=LINE_WIDTH,
                 )
             )
         previous_point = point
