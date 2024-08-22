@@ -68,17 +68,18 @@ def get_shortest_path(
         with open(cachepath, 'r') as f:
             data = json.load(f)
     else:
-        process = Popen(["./TurtleRoute/route"] + args, stdout=PIPE)
+        print("Processing a route for:", args)
+        process = Popen(["./TurtleRoute/route"] + args, stdout=PIPE, stderr=PIPE)
         output, err = process.communicate()
         exit_code = process.wait()
 
         if exit_code != 0:
-            pass  # TODO: Handle a nonzero exit code
+            print("Processing turtle route with args (", args, ") returned nonzero return code: ", exit_code)
 
         if len(err) != 0:
-            pass  # TODO: Handle nonempty stderr
+            print("Processing turtle route with args (", args, ") returned stderr: ", err)
 
-        print(output)
+        print("TurtleRoute result:", output)
         data = json.loads(output)
 
         with open(cachepath, 'wb') as f:
@@ -473,9 +474,9 @@ def unpack_points(points: PointPath) -> List[Point]:
 #
 ################################################################################
 def get_full_waypoint_unlock_path() -> None:
-    # from paths.fullpath import segments, waypoint_data, origin
-    # from paths.fullpath_skipbad import segments, waypoint_data, origin
-    from paths.minimal_core_wizard_vault_utility import segments, waypoint_data, origin
+    # from paths.central_tyria_all_waypoints import segments, waypoint_data, origin
+    from paths.central_tyria_skip_dismount_waypoints import segments, waypoint_data, origin
+    # from paths.central_tyria_minimal_wizard_vault_utility_waypoints import segments, waypoint_data, origin
 
     shortest_paths: List[List[PointPath]] = get_shortest_path_through_maplist(
         segments,
