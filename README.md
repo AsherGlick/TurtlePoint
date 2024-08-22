@@ -1,6 +1,6 @@
 
 Turtle Point is a tool that creates the most optimal path to unlock all of the
-central tyria waypoints on a Siege Turtle.
+central tyria waypoints on a Siege Turtle or any other multi seat chair / mount.
 
 ![Turtle Point Logo](TurtlePoint.png)
 
