@@ -5,6 +5,8 @@ import os
 import random
 import string
 import struct
+import zipfile
+import shutil
 
 
 # TODO: use units.continent_to_meters() instead of this constant
@@ -87,6 +89,10 @@ def within_bounds(
 # pack from the list of points given.
 ################################################################################
 def export_taco(points: List[Point], folder: str, map_ids: List[int]) -> None:
+    raw_data_folder = os.path.join(folder, "raw_data")
+
+    os.makedirs(raw_data_folder, exist_ok=True)
+
     map_data: Dict[int, Any] = {}
     for map_id in map_ids:
         map_data[map_id] = get_api_json("https://api.guildwars2.com/v2/maps/{map_id}".format(map_id=map_id))
@@ -119,13 +125,11 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]) -> None:
 
     paths.append((current_map, current_path))
 
-    trail_id = 0
-
-    xml_output = ['<OverlayData><MarkerCategory name="a" DisplayName="IggyTurtle"/><POIs>']
+    xml_output = ['<OverlayData><MarkerCategory name="burritosturtlepoint" DisplayName="Burrito\'s Turtle Point"/><POIs>']
     for trail_pair in paths:
 
         trail_filename = "{}.trl".format("".join(random.sample(string.ascii_letters, 6)))
-        trail_path = os.path.join(folder, trail_filename)
+        trail_path = os.path.join(raw_data_folder, trail_filename)
 
         # Write the .trl file
         with open(trail_path, 'wb') as f:
@@ -135,10 +139,19 @@ def export_taco(points: List[Point], folder: str, map_ids: List[int]) -> None:
             for trail_point in trail_pair[1]:
                 f.write(struct.pack("<fff", *trail_point))
 
-        trail_id += 1
-
-        xml_output.append('<Trail type="a" trailData="{}" texture="a.png"/>'.format(trail_filename))
+        xml_output.append('<Trail type="burritosturtlepoint" trailData="{}" texture="path.png"/>'.format(trail_filename))
     xml_output.append("</POIs></OverlayData>")
 
-    with open(os.path.join(folder, "TurtlePoint.xml"), "w") as f:
+    with open(os.path.join(raw_data_folder, "TurtlePoint.xml"), "w") as f:
         f.write("".join(xml_output))
+
+    shutil.copyfile("source_assets/path.png", os.path.join(raw_data_folder, "path.png"))
+
+    output_zip = os.path.join(folder, "BurritosTurtlePoint.taco")
+
+    with zipfile.ZipFile(output_zip, 'w', zipfile.ZIP_DEFLATED) as zipf:
+        for root, dirs, files in os.walk(raw_data_folder):
+            for file in files:
+                file_path = os.path.join(root, file)
+                arcname = os.path.relpath(file_path, raw_data_folder)
+                zipf.write(file_path, arcname)
